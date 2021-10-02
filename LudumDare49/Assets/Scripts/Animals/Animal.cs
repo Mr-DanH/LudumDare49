@@ -7,12 +7,13 @@ public class Animal : MonoBehaviour
 {
     public Image m_image;
 
-    public float MateTime { get; private set; } = 5;
+    public float MateTime { get; private set; } = MATE_TIME;
 
     float m_hunger;
 
     const float HUNGER_EAT = 5;
-    const float HUNGER_DIE = 10;
+    const float HUNGER_DIE = 15;
+    const float MATE_TIME = 10;
 
     Vector2 m_from;
     Vector2 m_target;
@@ -35,6 +36,7 @@ public class Animal : MonoBehaviour
     const float DIST_PER_BOB = 30;
 
     public Animal Mate { get; set;}
+    public Animal Prey { get; set;}
     public Vector2 Target { get { return m_target; } }
 
     public float Scale { get; set; } = 1;
@@ -77,10 +79,10 @@ public class Animal : MonoBehaviour
         m_bobScale = (m_target - m_from).magnitude / numBobs;
     }
 
-    bool MoveTowardsTarget()
+    bool MoveTowardsTarget(float speedFactor = 1)
     {
         Vector2 toTarget = m_target - (Vector2)transform.localPosition;
-        float moveAmount = m_speed * Time.deltaTime;
+        float moveAmount = speedFactor * m_speed * Time.deltaTime;
 
         if(toTarget.sqrMagnitude < moveAmount)
         {
@@ -110,6 +112,15 @@ public class Animal : MonoBehaviour
         State = eState.ApproachMate;
     }
 
+    public void Kill()
+    {
+        gameObject.AddComponent<CanvasGroup>();
+        Vector3 scale = transform.localScale;
+        m_image.transform.localScale = new Vector3(m_image.transform.localScale.x, -1, 1);
+        m_timeRemaining = 1;
+        State = eState.Dead;
+    }
+
     void Update()
     {
         if(Scale < 1)
@@ -122,6 +133,8 @@ public class Animal : MonoBehaviour
         MateTime = Mathf.MoveTowards(MateTime, 0, Time.deltaTime);
         m_hunger += Time.deltaTime;
 
+        //hunger checks
+
         switch(State)
         {
             case eState.Wait:
@@ -132,14 +145,22 @@ public class Animal : MonoBehaviour
                         return;
                     }
 
-                    if(m_hunger > HUNGER_DIE)
+                    if(m_hunger > HUNGER_DIE && AnimalController.Instance.IsCarnivore(this))
                     {
-                        gameObject.AddComponent<CanvasGroup>();
-                        Vector3 scale = transform.localScale;
-                        m_image.transform.localScale = new Vector3(m_image.transform.localScale.x, -1, 1);
-                        m_timeRemaining = 1;
-                        State = eState.Dead;
+                        Kill();
                         return;
+                    }
+
+                    if(m_hunger > HUNGER_EAT)
+                    {
+                        Animal prey = AnimalController.Instance.FindPrey(this);
+                        if(prey != null)
+                        {
+                            Prey = prey;
+                            MoveTo(prey.transform.localPosition);
+                            State = eState.Chasing;
+                            return;
+                        }
                     }
 
                     m_timeRemaining -= Time.deltaTime;
@@ -161,7 +182,6 @@ public class Animal : MonoBehaviour
 
                         float angle = Random.Range(0, 360) * Mathf.Rad2Deg;
                         float radius = Random.Range(0, Island.Instance.Radius);
-
                         MoveTo(new Vector2(radius * Mathf.Cos(angle), radius * Mathf.Sin(angle)));
                         State = eState.Explore;
                     }                    
@@ -215,6 +235,8 @@ public class Animal : MonoBehaviour
                             Mate.Mate = null;
                             Mate = null;
                         }
+
+                        MateTime = MATE_TIME;
                         
                         float angle = Random.Range(0, 360) * Mathf.Rad2Deg;
                         float radius = Random.Range(0, 200);
@@ -224,6 +246,27 @@ public class Animal : MonoBehaviour
                     }                    
                 }
                 break;
+
+            case eState.Chasing:
+                {
+                    if(Prey == null || Prey.State == eState.Dead)
+                    {
+                        m_timeRemaining = 1;
+                        State = eState.Wait;
+                        return;
+                    }
+
+                    m_target = Prey.transform.localPosition;
+                    if(MoveTowardsTarget(2))
+                    {
+                        Prey.Kill();
+                        m_hunger = 0;
+
+                        m_timeRemaining = 1;
+                        State = eState.Wait;
+                    }
+                }
+                break;                
 
             case eState.Dead:
                 {

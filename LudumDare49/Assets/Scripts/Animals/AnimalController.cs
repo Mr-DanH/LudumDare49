@@ -21,16 +21,29 @@ public class AnimalController : Singleton<AnimalController>
     public class AnimalDef
     {
         public AnimalVisual m_visual;
+        public int m_foodWebIndex;
         //todo: traits
     }
     List<AnimalDef> m_animalDefs = new List<AnimalDef>();
+    
+    [System.Serializable]
+    public class FoodWeb
+    {
+        public List<int> m_eats;
+    }
+    public List<FoodWeb> m_foodWeb = new List<FoodWeb>();
 
     void Start()
     {
-        foreach(var visual in m_animalVisuals)
+        List<AnimalVisual> visuals = new List<AnimalVisual>(m_animalVisuals);
+
+        for(int i = 0; i < m_foodWeb.Count; ++i)
         {
             var def = new AnimalDef();
-            def.m_visual = visual;
+            int visualIndex = Random.Range(0, visuals.Count);
+            def.m_visual = visuals[visualIndex];
+            visuals.RemoveAt(visualIndex);
+            def.m_foodWebIndex = i;
             m_animalDefs.Add(def);
         }
 
@@ -86,6 +99,23 @@ public class AnimalController : Singleton<AnimalController>
     public Animal FindMate(Animal source)
     {
         List<Animal> animals = m_animals.FindAll(a => a != source && a.CanMate() && a.Def == source.Def);
+
+        if(animals.Count == 0)
+            return null;
+
+        return GetClosest(source.transform.position, animals);
+    }
+
+    public bool IsCarnivore(Animal source)
+    {
+        return m_foodWeb[source.Def.m_foodWebIndex].m_eats.Count > 0;
+    }
+    
+    public Animal FindPrey(Animal source)
+    {
+        List<AnimalDef> defs = m_foodWeb[source.Def.m_foodWebIndex].m_eats.ConvertAll(a => m_animalDefs[a]);
+
+        List<Animal> animals = m_animals.FindAll(a => defs.Contains(a.Def));
 
         if(animals.Count == 0)
             return null;
