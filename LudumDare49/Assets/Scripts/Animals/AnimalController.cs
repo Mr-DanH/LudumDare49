@@ -47,10 +47,10 @@ public class AnimalController : Singleton<AnimalController>
             m_animalDefs.Add(def);
         }
 
-        SpawnAtPosition(m_animalDefs[0], Vector2.zero);
-        SpawnAtPosition(m_animalDefs[0], Vector2.zero);
-        SpawnAtPosition(m_animalDefs[1], Vector2.zero);
-        SpawnAtPosition(m_animalDefs[1], Vector2.zero);
+        // SpawnAtPosition(m_animalDefs[0], Vector2.zero);
+        // SpawnAtPosition(m_animalDefs[0], Vector2.zero);
+        // SpawnAtPosition(m_animalDefs[1], Vector2.zero);
+        // SpawnAtPosition(m_animalDefs[1], Vector2.zero);
     }
 
     public void SpawnMultipleAtPosition(AnimalDef def, Vector3 pos, int num)
