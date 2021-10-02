@@ -40,7 +40,7 @@ public class AnimalController : Singleton<AnimalController>
         SpawnAtPosition(m_animalDefs[1], Vector2.zero);
     }
 
-    public void SpawnMultipleAtPosition(AnimalDef def, Vector2 pos, int num)
+    public void SpawnMultipleAtPosition(AnimalDef def, Vector3 pos, int num)
     {
         for (int i = 0; i < num; i++)
         {
@@ -48,7 +48,7 @@ public class AnimalController : Singleton<AnimalController>
         }
     }
 
-    public Animal SpawnAtPosition(AnimalDef def, Vector2 pos)
+    public Animal SpawnAtPosition(AnimalDef def, Vector3 pos)
     {
         var animal = Instantiate(m_prefab, pos, Quaternion.identity, m_island);
         animal.name = m_index++.ToString();
