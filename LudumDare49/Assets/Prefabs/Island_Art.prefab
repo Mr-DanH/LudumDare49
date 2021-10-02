@@ -2198,6 +2198,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   islandObjectsContainer: {fileID: 2857225315928663275}
   radius: 300
+  crateDropTemplate: {fileID: 0}
 --- !u!1 &6509547116112691516
 GameObject:
   m_ObjectHideFlags: 0

@@ -11,60 +11,81 @@ using UnityEngine.UI;
 public class ConveyorBeltItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
     [SerializeField] Image type;
-    [SerializeField] Text countdown;
     [SerializeField] Text spawnNum;
-    [SerializeField] RectTransform dragVisuals;
+    [SerializeField] GameObject notValid;
 
     [SerializeField] RectTransform island;
-    [SerializeField] RectTransform target;
 
-    public float TimeOut { get; private set; }
-    public bool Used { get; private set; }
+
+    [Header("Belt")]
+    [SerializeField] AnimationCurve beltMovement;
+    [SerializeField] AnimationCurve fallingMovement;
+    [SerializeField] Vector2 startingPos = new Vector2(720, 35);
+    [SerializeField] Vector2 endingPos = new Vector2(118, -122);
+    float timer = 0;
+
+    public bool Removable { get; private set; }
     public AnimalController.AnimalDef ItemType { get; private set; }
 
     int spawnCount;
+    bool isDragging;
+    bool isOnIsland = false;
 
-    public void Init(float timeOut, int numToSpawn)
+    public void Init(int numToSpawn, AnimalController.AnimalDef itemType)
     {
-        TimeOut = timeOut;
-        ItemType = AnimalController.Instance.GetRandomAnimalDef();
+        ItemType = itemType;
         type.sprite = ItemType.m_visual.m_sprite;
         spawnCount = numToSpawn;
         spawnNum.text = $"x{numToSpawn.ToString()}";
+
+        transform.localPosition = startingPos;
+
         gameObject.SetActive(true);
     }
 
-    public void Refresh(float timer)
+    public void MoveItem(float deltaTime, float duration)
     {
-        float duration = TimeOut - timer;
-        countdown.text = $"{duration.ToString("0.0")}s";
+        if (!isDragging)
+        {
+            timer += deltaTime;
+            float t = timer / duration;
+            float moment = beltMovement.Evaluate(t);
+            float yMovement = fallingMovement.Evaluate(t);
+            Vector2 pos = new Vector2();
+            pos.x = Mathf.Lerp(startingPos.x, endingPos.x, moment);
+            pos.y = Mathf.Lerp(startingPos.y, endingPos.y, yMovement);
+            transform.localPosition = pos;
+
+            if (moment >= 1)
+            {
+                FallOff();
+            }
+        }
     }
 
-    bool isDragging;
-    bool isOnIsland = false;
+    public void FallOff()
+    {
+        Removable = true;
+    }
 
     void IBeginDragHandler.OnBeginDrag(PointerEventData data)
     {
         isDragging = true;
-        target.gameObject.SetActive(true);
     }
 
     void IDragHandler.OnDrag(PointerEventData data)
     {
         if (isDragging)
         {
-            // are we over the island? If so turn off these visuals
             Vector2 screenPos = data.position;
-            dragVisuals.transform.position = data.position;
+            transform.position = data.position;
             
             Vector2 targetIslandPos;
             RectTransformUtility.ScreenPointToLocalPointInRectangle(island, screenPos, Camera.main, out targetIslandPos);
-            target.transform.localPosition = targetIslandPos;
 
             isOnIsland = targetIslandPos.magnitude <= Island.Instance.Radius;
 
-            target.gameObject.SetActive(isOnIsland);
-            dragVisuals.gameObject.SetActive(!isOnIsland);
+            notValid.SetActive(!isOnIsland);
         }
     }
 
@@ -74,16 +95,14 @@ public class ConveyorBeltItem : MonoBehaviour, IBeginDragHandler, IDragHandler, 
         {
             Vector3 targetIslandPos;
             RectTransformUtility.ScreenPointToWorldPointInRectangle(island, data.position, Camera.main, out targetIslandPos);
-            AnimalController.Instance.SpawnMultipleAtPosition(ItemType, targetIslandPos, spawnCount);
-            Used = true;
+            Island.Instance.SpawnAnimalsFromCrate(ItemType, spawnCount, targetIslandPos);
         }
-        dragVisuals.anchoredPosition = Vector3.zero;
+        else
+        {
+            ConveyorBelt.Instance.CreateSpecificItem(ItemType, spawnCount);
+        }
+    
         isDragging = false;
-        target.gameObject.SetActive(false);
-    }
-
-    void OnDestroy()
-    {
-        target?.gameObject?.SetActive(false);
+        Removable = true;
     }
 }

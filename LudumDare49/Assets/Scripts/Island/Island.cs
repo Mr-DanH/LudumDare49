@@ -8,6 +8,7 @@ public class Island : Singleton<Island>
     [SerializeField] float radius = 200f;
      public float Radius { get { return radius; } }
      public float InnerRadius { get { return radius * 0.33f; } }
+    [SerializeField] CrateDrop crateDropTemplate;
 
     bool GetCircleIntersection(float radius, Vector2 from, Vector2 dir, out Vector2 point)
     {
@@ -69,6 +70,18 @@ public class Island : Singleton<Island>
         }
 
         return point;
+    }
+
+    public void SpawnAnimalsFromCrate(AnimalController.AnimalDef animalDef, int numToSpawn, Vector3 spawnPoint)
+    {
+        CrateDrop clone = Instantiate<CrateDrop>(crateDropTemplate, transform);
+        clone.gameObject.SetActive(true);
+        clone.Drop(animalDef, numToSpawn, spawnPoint, FinishedCrateFall);
+    }
+
+    public void FinishedCrateFall(AnimalController.AnimalDef animalDef, int numToSpawn, Vector3 spawnPos)
+    {
+        AnimalController.Instance.SpawnMultipleAtPosition(animalDef, spawnPos, numToSpawn);
     }
 
     void Update()
