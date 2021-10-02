@@ -114,6 +114,15 @@ public class Animal : MonoBehaviour
         State = eState.ApproachMate;
     }
 
+    public void EndMating()
+    {
+        Mate = null;
+        MateTime = MATE_TIME;                        
+
+        MoveTo(Island.Instance.GetRandomMoveTarget());
+        State = eState.Explore;
+    }
+
     public void Kill()
     {
         gameObject.AddComponent<CanvasGroup>();
@@ -135,7 +144,11 @@ public class Animal : MonoBehaviour
         MateTime = Mathf.MoveTowards(MateTime, 0, Time.deltaTime);
         m_hunger += Time.deltaTime;
 
-        //hunger checks
+        if(State != eState.Dead && m_hunger > HUNGER_DIE && AnimalController.Instance.IsCarnivore(this))
+        {
+            Kill();
+            return;
+        }
 
         switch(State)
         {
@@ -144,12 +157,6 @@ public class Animal : MonoBehaviour
                     if(Mate != null)
                     {
                         MoveToMate();
-                        return;
-                    }
-
-                    if(m_hunger > HUNGER_DIE && AnimalController.Instance.IsCarnivore(this))
-                    {
-                        Kill();
                         return;
                     }
 
@@ -206,6 +213,13 @@ public class Animal : MonoBehaviour
 
             case eState.ApproachMate:
                 {
+                    if(Mate == null || Mate.State == eState.Dead)
+                    {
+                        m_timeRemaining = 1;
+                        State = eState.Wait;
+                        return;
+                    }
+
                     if(MoveTowardsTarget() && (Vector2)Mate.transform.localPosition == Mate.Target)
                     {
                         m_timeRemaining = 1;
@@ -216,6 +230,13 @@ public class Animal : MonoBehaviour
 
             case eState.Mate:
                 {
+                    if(Mate == null || Mate.State == eState.Dead)
+                    {
+                        m_timeRemaining = 1;
+                        State = eState.Wait;
+                        return;
+                    }
+
                     m_timeRemaining -= Time.deltaTime;
 
                     Vector3 pos = m_target;
@@ -226,23 +247,12 @@ public class Animal : MonoBehaviour
 
                     if(m_timeRemaining < 0)
                     {
-                        if(Mate != null)
-                        {
-                            var baby = AnimalController.Instance.SpawnAtPosition(Def, (transform.position + Mate.transform.position) / 2);
-                            baby.Scale = 0.25f;
-                            baby.transform.localScale = Vector3.one * baby.Scale;
+                        var baby = AnimalController.Instance.SpawnAtPosition(Def, (transform.position + Mate.transform.position) / 2);
+                        baby.Scale = 0.25f;
+                        baby.transform.localScale = Vector3.one * baby.Scale;
 
-                            Mate.Mate = null;
-                            Mate = null;
-                        }
-
-                        MateTime = MATE_TIME;
-                        
-                        float angle = Random.Range(0, 360) * Mathf.Rad2Deg;
-                        float radius = Random.Range(0, 200);
-
-                        MoveTo(new Vector2(radius * Mathf.Cos(angle), radius * Mathf.Sin(angle)));
-                        State = eState.Explore;
+                        Mate.EndMating();
+                        EndMating();
                     }                    
                 }
                 break;
