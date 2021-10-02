@@ -109,6 +109,8 @@ public class AnimalController : Singleton<AnimalController>
         if(animals.Count == 0)
             return null;
 
+        animals.RemoveAll(a => Vector2.Angle(source.transform.localPosition, a.transform.localPosition) > 60);
+
         return GetClosest(source.transform.position, animals);
     }
 
@@ -125,6 +127,8 @@ public class AnimalController : Singleton<AnimalController>
 
         if(animals.Count == 0)
             return null;
+            
+        animals.RemoveAll(a => Vector2.Angle(source.transform.localPosition, a.transform.localPosition) > 60);
 
         return GetClosest(source.transform.position, animals);
     }
