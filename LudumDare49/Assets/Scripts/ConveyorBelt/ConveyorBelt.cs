@@ -14,14 +14,12 @@ public class ConveyorBelt : MonoBehaviour
     [SerializeField] ConveyorBeltItem itemTemplate;
     [SerializeField] int maxBeltItems;
     [SerializeField] float itemDuration;
+    [SerializeField] float itemCreationDelay;
 
-    List<ConveyorBeltItem> items;
-    float timer;
+    List<ConveyorBeltItem> items = new List<ConveyorBeltItem>();
 
-    void Start()
-    {
-        timer = 0f;
-    }
+    float timer = 0f;
+    float itemLastCreated = 0f;
 
     void Update()
     {
@@ -31,13 +29,16 @@ public class ConveyorBelt : MonoBehaviour
 
     void RefreshConveyorItems()
     {
+        foreach(var item in items)
+        {
+            item.Refresh(timer);
+        }
+
         // has an item timed out and isn't being currently used
         RemoveTimedOutItems();
 
         // does a new item need created? 
-        // first lets create with no delay
-
-        bool shouldCreateNextItem = items.Count < maxBeltItems;
+        bool shouldCreateNextItem = items.Count < maxBeltItems && itemLastCreated < timer;
         
         if (shouldCreateNextItem)
         {
@@ -49,8 +50,10 @@ public class ConveyorBelt : MonoBehaviour
     {
         ConveyorBeltItem clone = Instantiate<ConveyorBeltItem>(itemTemplate, belt);
         // todo - find somewhere that tells us how many animals we're using and how many are spawned from the item
-        clone.Init(timer += itemDuration, Random.Range(0, 5), Random.Range(0, 5));
+        float timeOut = timer + itemDuration;
+        clone.Init(timeOut, Random.Range(0, 5), Random.Range(1, 5));
         items.Add(clone);
+        itemLastCreated = timer + itemCreationDelay;
     }
 
     void RemoveItem(ConveyorBeltItem item)
@@ -61,7 +64,7 @@ public class ConveyorBelt : MonoBehaviour
 
     void RemoveTimedOutItems()
     {
-        List<ConveyorBeltItem> timedOutItems = items.FindAll(x=> timer >= x.TimeOut);
+        List<ConveyorBeltItem> timedOutItems = items.FindAll(x=>timer >= x.TimeOut);
         foreach (var item in timedOutItems)
         {
             RemoveItem(item);
