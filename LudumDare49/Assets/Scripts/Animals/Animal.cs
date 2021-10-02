@@ -139,9 +139,6 @@ public class Animal : MonoBehaviour
                             {
                                 Mate = mate;
                                 Mate.Mate = this;
-                                // Debug.LogWarning("from " + this + " " + transform.GetSiblingIndex(), this);
-                                // Debug.LogWarning("to " + Mate + " " + Mate.transform.GetSiblingIndex(), Mate);
-
                                 MoveToMate();
                                 return;
                             }
@@ -199,14 +196,6 @@ public class Animal : MonoBehaviour
                             var baby = AnimalController.Instance.SpawnAtPosition(Def, (transform.position + Mate.transform.position) / 2);
                             baby.Scale = 0.25f;
                             baby.transform.localScale = Vector3.one * baby.Scale;
-                            //    Debug.Log("baby " + baby + " " + baby.transform.GetSiblingIndex(), this);
-
-                            // if(Mate.State != eState.Mate)
-                            // {
-                            //     Debug.LogError(this, this);
-                            //     Debug.LogError(Mate, Mate);
-                            //     return;
-                            // }
 
                             Mate.Mate = null;
                             Mate = null;
