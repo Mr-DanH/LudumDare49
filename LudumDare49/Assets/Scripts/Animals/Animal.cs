@@ -22,7 +22,7 @@ public class Animal : MonoBehaviour
         ApproachMate,
         Mate
     }
-    eState m_state;
+    public eState State { get; private set; }
     float m_timeRemaining;
 
     float m_bobScale;
@@ -32,6 +32,24 @@ public class Animal : MonoBehaviour
     public Vector2 Target { get { return m_target; } }
 
     public float Scale { get; set; } = 1;
+
+    public bool CanMate()
+    {
+        if(MateTime > 0)
+            return false;
+
+        if(Mate != null)
+            return false;
+
+        switch(State)
+        {
+            case eState.ApproachMate:
+            case eState.Mate:
+                return false;
+        }
+
+        return true;
+    }
 
     void MoveTo(Vector2 target)
     {
@@ -73,8 +91,8 @@ public class Animal : MonoBehaviour
         bool isLeft = Mate.Target.x > m_target.x;
         float xOffset = isLeft ? -40 : 40;
         MoveTo(Mate.Target + new Vector2(xOffset, 0));
-        transform.localScale = new Vector3(isLeft ? 1 : -1, 1, 1);
-        m_state = eState.ApproachMate;
+        transform.localScale = new Vector3(isLeft ? 1 : -1, 1, 1) * Scale;
+        State = eState.ApproachMate;
     }
 
     void Update()
@@ -88,10 +106,16 @@ public class Animal : MonoBehaviour
 
         MateTime = Mathf.MoveTowards(MateTime, 0, Time.deltaTime);
 
-        switch(m_state)
+        switch(State)
         {
             case eState.Wait:
                 {
+                    if(Mate != null)
+                    {
+                        MoveToMate();
+                        return;
+                    }
+
                     m_timeRemaining -= Time.deltaTime;
                     if(m_timeRemaining < 0)
                     {
@@ -102,11 +126,13 @@ public class Animal : MonoBehaviour
                             var animals = new List<Animal>(FindObjectsOfType<Animal>());
                             animals.Remove(this);
 
-                            var mate = animals.Find(a => a.MateTime == 0 && a.Mate == null);
+                            var mate = animals.Find(a => a.CanMate());
                             if (mate != null) 
                             {
                                 Mate = mate;
                                 Mate.Mate = this;
+                                // Debug.LogWarning("from " + this + " " + transform.GetSiblingIndex(), this);
+                                // Debug.LogWarning("to " + Mate + " " + Mate.transform.GetSiblingIndex(), Mate);
 
                                 MoveToMate();
                                 return;
@@ -117,7 +143,7 @@ public class Animal : MonoBehaviour
                         float radius = Random.Range(0, 200);
 
                         MoveTo(new Vector2(radius * Mathf.Cos(angle), radius * Mathf.Sin(angle)));
-                        m_state = eState.Explore;
+                        State = eState.Explore;
                     }                    
                 }
                 break;
@@ -133,7 +159,7 @@ public class Animal : MonoBehaviour
                         }
 
                         m_timeRemaining = 1;
-                        m_state = eState.Wait;
+                        State = eState.Wait;
                     }
                 }
                 break;
@@ -143,7 +169,7 @@ public class Animal : MonoBehaviour
                     if(MoveTowardsTarget() && (Vector2)Mate.transform.localPosition == Mate.Target)
                     {
                         m_timeRemaining = 1;
-                        m_state = eState.Mate;
+                        State = eState.Mate;
                     }
                 }
                 break;
@@ -161,19 +187,28 @@ public class Animal : MonoBehaviour
                     if(m_timeRemaining < 0)
                     {
                         if(Mate != null)
-                        {                           
+                        {
                             var baby = Instantiate(this, (transform.position + Mate.transform.position) / 2, transform.rotation, transform.parent);
                             baby.Scale = 0.25f;
-                            
+                            baby.transform.localScale = Vector3.one * baby.Scale;
+                            //    Debug.Log("baby " + baby + " " + baby.transform.GetSiblingIndex(), this);
+
+                            // if(Mate.State != eState.Mate)
+                            // {
+                            //     Debug.LogError(this, this);
+                            //     Debug.LogError(Mate, Mate);
+                            //     return;
+                            // }
+
                             Mate.Mate = null;
-                            Mate = null;                            
+                            Mate = null;
                         }
                         
                         float angle = Random.Range(0, 360) * Mathf.Rad2Deg;
                         float radius = Random.Range(0, 200);
 
                         MoveTo(new Vector2(radius * Mathf.Cos(angle), radius * Mathf.Sin(angle)));
-                        m_state = eState.Explore;
+                        State = eState.Explore;
                     }                    
                 }
                 break;
