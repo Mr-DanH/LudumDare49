@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Animal : MonoBehaviour
 {
@@ -33,6 +34,16 @@ public class Animal : MonoBehaviour
 
     public float Scale { get; set; } = 1;
 
+    public AnimalController.AnimalDef Def { get; private set; }
+
+    public void Init(AnimalController.AnimalDef def)
+    {
+        Def = def;
+
+        if(TryGetComponent(out Image image))
+            image.sprite = def.m_visual.m_sprite;
+    }
+
     public bool CanMate()
     {
         if(MateTime > 0)
@@ -56,7 +67,7 @@ public class Animal : MonoBehaviour
         m_from = transform.localPosition;
         m_target = target;
 
-        transform.localScale = new Vector3(Mathf.Sign(m_target.x - m_from.x), 1, 1);
+        transform.localScale = new Vector3(Mathf.Sign(m_from.x - m_target.x), 1, 1);
 
         int numBobs = Mathf.RoundToInt((m_target - m_from).magnitude / DIST_PER_BOB);
         m_bobScale = (m_target - m_from).magnitude / numBobs;
@@ -91,7 +102,7 @@ public class Animal : MonoBehaviour
         bool isLeft = Mate.Target.x > m_target.x;
         float xOffset = isLeft ? -40 : 40;
         MoveTo(Mate.Target + new Vector2(xOffset, 0));
-        transform.localScale = new Vector3(isLeft ? 1 : -1, 1, 1) * Scale;
+        transform.localScale = new Vector3(isLeft ? -1 : 1, 1, 1) * Scale;
         State = eState.ApproachMate;
     }
 
@@ -123,10 +134,7 @@ public class Animal : MonoBehaviour
 
                         if(MateTime == 0)
                         {
-                            var animals = new List<Animal>(FindObjectsOfType<Animal>());
-                            animals.Remove(this);
-
-                            var mate = animals.Find(a => a.CanMate());
+                            var mate = AnimalController.Instance.FindMate(this);
                             if (mate != null) 
                             {
                                 Mate = mate;
@@ -188,7 +196,7 @@ public class Animal : MonoBehaviour
                     {
                         if(Mate != null)
                         {
-                            var baby = AnimalController.Instance.SpawnAtPosition((transform.position + Mate.transform.position) / 2);
+                            var baby = AnimalController.Instance.SpawnAtPosition(Def, (transform.position + Mate.transform.position) / 2);
                             baby.Scale = 0.25f;
                             baby.transform.localScale = Vector3.one * baby.Scale;
                             //    Debug.Log("baby " + baby + " " + baby.transform.GetSiblingIndex(), this);
