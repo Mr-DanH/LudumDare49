@@ -65,6 +65,24 @@ public class AnimalController : Singleton<AnimalController>
         return m_animalDefs[index];
     }
 
+    public Animal GetClosest(Vector3 worldPos, List<Animal> sourceList)
+    {
+        Animal closestAnimal = null;
+        float closestDistSq = float.MaxValue;
+
+        foreach(var animal in sourceList)
+        {
+            float distSq = (worldPos - animal.transform.position).sqrMagnitude;
+            if(distSq < closestDistSq)
+            {
+                closestDistSq = distSq;
+                closestAnimal = animal;
+            }
+        }
+
+        return closestAnimal;
+    }
+
     public Animal FindMate(Animal source)
     {
         List<Animal> animals = m_animals.FindAll(a => a != source && a.CanMate() && a.Def == source.Def);
@@ -72,7 +90,7 @@ public class AnimalController : Singleton<AnimalController>
         if(animals.Count == 0)
             return null;
 
-        return animals[0];
+        return GetClosest(source.transform.position, animals);
     }
 
     public void Despawn(Animal animal)
