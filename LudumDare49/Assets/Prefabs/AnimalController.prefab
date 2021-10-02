@@ -52,3 +52,5 @@ MonoBehaviour:
     m_sprite: {fileID: 21300000, guid: df82f045b12f1714990c8eb3b7f77bb8, type: 3}
   - m_name: Emu
     m_sprite: {fileID: 21300000, guid: 1ab6f48d6c995564e80cbcfe340dff45, type: 3}
+  - m_name: Beetle
+    m_sprite: {fileID: 21300000, guid: 2fa93c4fca8fe1242a75dc2bd8eaa4f6, type: 3}
