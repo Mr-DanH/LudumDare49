@@ -22,7 +22,7 @@ public class Island : Singleton<Island>
 
     void SortIslandObjects()
     {
-        RectTransform[] allChildren = GetComponentsInChildren<RectTransform>();
+        RectTransform[] allChildren = islandObjectsContainer.GetComponentsInChildren<RectTransform>();
         List<IslandObjectSortDistance> distanceFromCamera = new List<IslandObjectSortDistance>();
 
         for(int i = 0; i < allChildren.Length; i++)
