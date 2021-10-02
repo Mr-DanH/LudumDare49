@@ -43,11 +43,13 @@ public class Animal : MonoBehaviour
 
     public AnimalController.AnimalDef Def { get; private set; }
 
-    public void Init(AnimalController.AnimalDef def)
+    public void Init(AnimalController.AnimalDef def, float minDegrees, float maxDegrees)
     {
         Def = def;
-
         m_image.sprite = def.m_visual.m_sprite;
+        
+        MoveTo(Island.Instance.GetRandomMoveTarget(minDegrees, maxDegrees));
+        State = eState.Explore;
     }
 
     public bool CanMate()

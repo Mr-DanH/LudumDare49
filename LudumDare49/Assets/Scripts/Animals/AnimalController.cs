@@ -55,17 +55,23 @@ public class AnimalController : Singleton<AnimalController>
 
     public void SpawnMultipleAtPosition(AnimalDef def, Vector3 pos, int num)
     {
+        //use double num so we have buffer ranges between each used range
+        float degreesPerSpawn = 360f / (num * 2);
+
+        if(num == 1)
+            degreesPerSpawn = 360f;
+
         for (int i = 0; i < num; i++)
         {
-            SpawnAtPosition(def, pos);
+            SpawnAtPosition(def, pos, (i * 2) * degreesPerSpawn, ((i * 2) + 1) * degreesPerSpawn);
         }
     }
 
-    public Animal SpawnAtPosition(AnimalDef def, Vector3 pos)
+    public Animal SpawnAtPosition(AnimalDef def, Vector3 pos, float minDegrees = 0, float maxDegrees = 360)
     {
         var animal = Instantiate(m_prefab, pos, Quaternion.identity, m_island);
         animal.name = m_index++.ToString();
-        animal.Init(def);
+        animal.Init(def, minDegrees, maxDegrees);
 
         m_animals.Add(animal);
 
