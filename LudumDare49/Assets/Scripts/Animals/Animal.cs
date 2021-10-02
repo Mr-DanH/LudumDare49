@@ -180,9 +180,7 @@ public class Animal : MonoBehaviour
                             }
                         }
 
-                        float angle = Random.Range(0, 360) * Mathf.Rad2Deg;
-                        float radius = Random.Range(0, Island.Instance.Radius);
-                        MoveTo(new Vector2(radius * Mathf.Cos(angle), radius * Mathf.Sin(angle)));
+                        MoveTo(Island.Instance.GetRandomMoveTarget());
                         State = eState.Explore;
                     }                    
                 }
