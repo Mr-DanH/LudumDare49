@@ -54,8 +54,11 @@ MonoBehaviour:
     m_sprite: {fileID: 21300000, guid: 1ab6f48d6c995564e80cbcfe340dff45, type: 3}
   - m_name: Beetle
     m_sprite: {fileID: 21300000, guid: 2fa93c4fca8fe1242a75dc2bd8eaa4f6, type: 3}
+  - m_name: Tiger
+    m_sprite: {fileID: 21300000, guid: e40a80eb248f5e44980bdee18a219175, type: 3}
   m_foodWeb:
   - m_eats: 0100000002000000
   - m_eats: 03000000
+  - m_eats: 04000000
   - m_eats: 
   - m_eats: 
