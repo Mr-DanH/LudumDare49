@@ -7,12 +7,68 @@ public class Island : Singleton<Island>
     [SerializeField] GameObject islandObjectsContainer;
     [SerializeField] float radius = 200f;
      public float Radius { get { return radius; } }
+     public float InnerRadius { get { return radius * 0.33f; } }
 
-    public Vector2 GetRandomMoveTarget(float minDegrees = 0, float maxDegrees = 360)
+    bool GetCircleIntersection(float radius, Vector2 from, Vector2 dir, out Vector2 point)
     {
+        //float innerRadius = radius * 0.33f;
+
+        Vector2 toMidPoint = -from;
+        Vector2 toIntersectionMidpoint = Vector2.Dot(toMidPoint, dir) * dir;
+        Vector2 midpoint = from + toIntersectionMidpoint;
+
+        if(midpoint.magnitude > radius)
+        {
+            point = Vector2.zero;
+            return false;
+        }
+
+        float distToIntersection = Mathf.Sqrt((radius * radius) - midpoint.sqrMagnitude);
+
+        Vector2 intersectionA = midpoint - (distToIntersection * dir);
+        Vector2 intersectionB = midpoint + (distToIntersection * dir);
+
+        point = (intersectionA - from).sqrMagnitude < (intersectionB - from).sqrMagnitude ? intersectionA : intersectionB;
+        return true;
+    }
+
+    public Vector2 GetRandomMoveTarget(Vector2 from, float minDegrees = 0, float maxDegrees = 360)
+    {
+        //If in inner circle head away from centre
+        if(from.magnitude <= InnerRadius)
+        {
+            float angleToCentre = Mathf.Atan2(from.y, from.x) * Mathf.Rad2Deg;
+            minDegrees = angleToCentre - 45;
+            maxDegrees = angleToCentre + 45;
+        }
+
+        //If on outer circle then head towards centre
+        if(from.magnitude >= Radius)
+        {
+            float angleToCentre = Mathf.Atan2(-from.y, -from.x) * Mathf.Rad2Deg;
+            minDegrees = angleToCentre - 45;
+            maxDegrees = angleToCentre + 45;
+        }
+
+
         float angle = Random.Range(minDegrees, maxDegrees) * Mathf.Deg2Rad;
-        float radius = Random.Range(Radius * 0.33f, Radius);
-        return new Vector2(radius * Mathf.Cos(angle), radius * Mathf.Sin(angle));
+        Vector2 dir = new Vector2( Mathf.Cos(angle), Mathf.Sin(angle));
+        float dist = Random.Range(25, 75);
+        Vector2 point = from + (dir * dist);
+
+        //Check if point passes through inner circle and outer circle
+        if(from.magnitude > InnerRadius && GetCircleIntersection(InnerRadius, from, dir, out Vector2 innerIntersection))
+        {
+            if((innerIntersection - from).sqrMagnitude < (point - from).sqrMagnitude)
+                point = innerIntersection;
+        }
+        if(point.magnitude > radius && GetCircleIntersection(radius, from, dir, out Vector2 outerItersection))
+        {
+            if((outerItersection - from).sqrMagnitude < (point - from).sqrMagnitude)
+                point = outerItersection;
+        }
+
+        return point;
     }
 
     void Update()
@@ -55,6 +111,12 @@ public class Island : Singleton<Island>
             Child = child;
             Distance = distance;
         }
+    }
+
+    void OnDrawGizmos()
+    {
+        Gizmos.DrawWireSphere(transform.position, InnerRadius);
+        Gizmos.DrawWireSphere(transform.position, radius);
     }
 
 }

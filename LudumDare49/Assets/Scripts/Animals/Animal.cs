@@ -48,7 +48,7 @@ public class Animal : MonoBehaviour
         Def = def;
         m_image.sprite = def.m_visual.m_sprite;
         
-        MoveTo(Island.Instance.GetRandomMoveTarget(minDegrees, maxDegrees));
+        MoveTo(Island.Instance.GetRandomMoveTarget(transform.localPosition, minDegrees, maxDegrees));
         State = eState.Explore;
     }
 
@@ -125,7 +125,7 @@ public class Animal : MonoBehaviour
         Mate = null;
         MateTime = MATE_TIME;                        
 
-        MoveTo(Island.Instance.GetRandomMoveTarget());
+        MoveTo(Island.Instance.GetRandomMoveTarget(transform.localPosition));
         State = eState.Explore;
     }
 
@@ -211,7 +211,7 @@ public class Animal : MonoBehaviour
                             }
                         }
 
-                        MoveTo(Island.Instance.GetRandomMoveTarget());
+                        MoveTo(Island.Instance.GetRandomMoveTarget(transform.localPosition));
                         State = eState.Explore;
                     }                    
                 }
