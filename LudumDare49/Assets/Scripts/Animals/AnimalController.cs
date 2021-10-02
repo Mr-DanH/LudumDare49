@@ -40,7 +40,15 @@ public class AnimalController : Singleton<AnimalController>
         SpawnAtPosition(m_animalDefs[1], Vector2.zero);
     }
 
-    public Animal SpawnAtPosition(AnimalDef def, Vector2 pos)
+    public void SpawnMultipleAtPosition(AnimalDef def, Vector3 pos, int num)
+    {
+        for (int i = 0; i < num; i++)
+        {
+            SpawnAtPosition(def, pos);
+        }
+    }
+
+    public Animal SpawnAtPosition(AnimalDef def, Vector3 pos)
     {
         var animal = Instantiate(m_prefab, pos, Quaternion.identity, m_island);
         animal.name = m_index++.ToString();
@@ -51,6 +59,12 @@ public class AnimalController : Singleton<AnimalController>
         return animal;
     }
 
+    public AnimalDef GetRandomAnimalDef()
+    {
+        int index = Random.Range(0, m_animalDefs.Count);
+        return m_animalDefs[index];
+    }
+
     public Animal FindMate(Animal source)
     {
         List<Animal> animals = m_animals.FindAll(a => a != source && a.CanMate() && a.Def == source.Def);
@@ -59,5 +73,11 @@ public class AnimalController : Singleton<AnimalController>
             return null;
 
         return animals[0];
+    }
+
+    public void Despawn(Animal animal)
+    {
+        m_animals.Remove(animal);
+        Destroy(animal);
     }
 }

@@ -35,7 +35,7 @@ public class ConveyorBelt : MonoBehaviour
         }
 
         // has an item timed out and isn't being currently used
-        RemoveTimedOutItems();
+        RemoveDeadItems();
 
         // does a new item need created? 
         bool shouldCreateNextItem = items.Count < maxBeltItems && itemLastCreated < timer;
@@ -49,25 +49,25 @@ public class ConveyorBelt : MonoBehaviour
     void CreateItem()
     {
         ConveyorBeltItem clone = Instantiate<ConveyorBeltItem>(itemTemplate, belt);
-        // todo - find somewhere that tells us how many animals we're using and how many are spawned from the item
+        // todo - find somewhere that tells us how many are spawned from the item
         float timeOut = timer + itemDuration;
-        clone.Init(timeOut, Random.Range(0, 5), Random.Range(1, 5));
+        clone.Init(timeOut, Random.Range(1, 5));
         items.Add(clone);
         itemLastCreated = timer + itemCreationDelay;
+    }
+
+    void RemoveDeadItems()
+    {
+        List<ConveyorBeltItem> timedOutItems = items.FindAll(x=>timer >= x.TimeOut || x.Used);
+        foreach (var item in timedOutItems)
+        {
+            RemoveItem(item);
+        }
     }
 
     void RemoveItem(ConveyorBeltItem item)
     {
         items.Remove(item);
         Destroy(item.gameObject);
-    }
-
-    void RemoveTimedOutItems()
-    {
-        List<ConveyorBeltItem> timedOutItems = items.FindAll(x=>timer >= x.TimeOut);
-        foreach (var item in timedOutItems)
-        {
-            RemoveItem(item);
-        }
     }
 }
