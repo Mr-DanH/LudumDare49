@@ -75,8 +75,6 @@ public class Animal : MonoBehaviour
         m_from = transform.localPosition;
         m_target = target;
 
-        transform.localScale = new Vector3(Mathf.Sign(m_from.x - m_target.x), 1, 1);
-
         int numBobs = Mathf.RoundToInt((m_target - m_from).magnitude / DIST_PER_BOB);
         m_bobScale = (m_target - m_from).magnitude / numBobs;
     }
@@ -107,10 +105,18 @@ public class Animal : MonoBehaviour
 
     void MoveToMate()
     {
-        bool isLeft = Mate.Target.x > m_target.x;
-        float xOffset = isLeft ? -40 : 40;
-        MoveTo(Mate.Target + new Vector2(xOffset, 0));
-        transform.localScale = new Vector3(isLeft ? -1 : 1, 1, 1) * Scale;
+        Vector3 direction = (Vector3)Mate.Target - transform.localPosition;
+
+        Transform camera = Camera.main.transform;
+        Vector3 worldDir = transform.parent.TransformVector(direction);
+        Vector3 cameraLocalDir = camera.InverseTransformVector(worldDir);
+
+        Vector3 cameraOffset = new Vector3(-Mathf.Sign(cameraLocalDir.x), 0, 0);
+
+        Vector3 worldOffset = camera.TransformVector(cameraOffset);
+        Vector3 localoffset = transform.parent.InverseTransformVector(worldOffset);
+
+        MoveTo(Mate.Target + ((Vector2)localoffset * 40));
         State = eState.ApproachMate;
     }
 
@@ -137,8 +143,7 @@ public class Animal : MonoBehaviour
         if(Scale < 1)
         {
             Scale = Mathf.MoveTowards(Scale, 1, Time.deltaTime * 0.25f);
-            Vector3 scale = transform.localScale;
-            transform.localScale = new Vector3(Mathf.Sign(scale.x), Mathf.Sign(scale.y), Mathf.Sign(scale.z)) * Scale;
+            transform.localScale = Vector3.one * Scale;
         }
 
         MateTime = Mathf.MoveTowards(MateTime, 0, Time.deltaTime);
@@ -148,6 +153,23 @@ public class Animal : MonoBehaviour
         {
             Kill();
             return;
+        }
+
+        if (State != eState.Dead && State != eState.Wait)
+        {
+            Transform camera = Camera.main.transform;
+            Vector3 direction = (Vector3)m_target - transform.localPosition;
+            direction.z = 0;
+
+            if(direction == Vector3.zero && Mate != null)
+                direction = (Vector3)Mate.Target - transform.localPosition;
+
+            direction.z = 0;
+
+            Vector3 worldDir = transform.parent.TransformVector(direction);
+            Vector3 cameraLocalDir = camera.InverseTransformVector(worldDir);
+
+            m_image.transform.localScale = new Vector3(-Mathf.Sign(cameraLocalDir.x), 1, 1);
         }
 
         switch(State)
@@ -292,5 +314,12 @@ public class Animal : MonoBehaviour
                 }
                 break;
         }
+    }
+
+    void OnDrawGizmosSelected()
+    {
+        Vector3 targetPos = transform.parent.TransformPoint(m_target);
+        Gizmos.DrawWireSphere(targetPos, 10);
+        Gizmos.DrawLine(transform.position, targetPos);
     }
 }
