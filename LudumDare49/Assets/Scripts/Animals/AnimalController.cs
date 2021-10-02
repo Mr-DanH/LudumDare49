@@ -40,6 +40,14 @@ public class AnimalController : Singleton<AnimalController>
         SpawnAtPosition(m_animalDefs[1], Vector2.zero);
     }
 
+    public void SpawnMultipleAtPosition(AnimalDef def, Vector2 pos, int num)
+    {
+        for (int i = 0; i < num; i++)
+        {
+            SpawnAtPosition(def, pos);
+        }
+    }
+
     public Animal SpawnAtPosition(AnimalDef def, Vector2 pos)
     {
         var animal = Instantiate(m_prefab, pos, Quaternion.identity, m_island);
@@ -49,6 +57,12 @@ public class AnimalController : Singleton<AnimalController>
         m_animals.Add(animal);
 
         return animal;
+    }
+
+    public AnimalDef GetRandomAnimalDef()
+    {
+        int index = Random.Range(0, m_animalDefs.Count);
+        return m_animalDefs[index];
     }
 
     public Animal FindMate(Animal source)

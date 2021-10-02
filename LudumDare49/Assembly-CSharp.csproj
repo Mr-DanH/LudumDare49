@@ -40,6 +40,8 @@
      <Compile Include="Assets\Scripts\Animals\Animal.cs" />
      <Compile Include="Assets\Scripts\ConveyorBelt\ConveyorBelt.cs" />
      <Compile Include="Assets\Scripts\ConveyorBelt\ConveyorBeltItem.cs" />
+     <Compile Include="Assets\Scripts\Core\Singleton.cs" />
+     <Compile Include="Assets\Scripts\Island\Island.cs" />
     <Reference Include="UnityEngine">
         <HintPath>C:/Program Files/Unity/Hub/Editor/2020.3.16f1/Editor/Data/Managed/UnityEngine/UnityEngine.dll</HintPath>
     </Reference>
