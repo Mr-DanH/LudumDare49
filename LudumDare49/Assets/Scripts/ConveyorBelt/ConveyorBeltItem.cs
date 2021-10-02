@@ -75,7 +75,6 @@ public class ConveyorBeltItem : MonoBehaviour, IBeginDragHandler, IDragHandler, 
             Vector3 targetIslandPos;
             RectTransformUtility.ScreenPointToWorldPointInRectangle(island, data.position, Camera.main, out targetIslandPos);
             AnimalController.Instance.SpawnMultipleAtPosition(ItemType, targetIslandPos, spawnCount);
-            Debug.Log($"Spawn positioning: [{targetIslandPos}]");
             Used = true;
         }
         dragVisuals.anchoredPosition = Vector3.zero;
