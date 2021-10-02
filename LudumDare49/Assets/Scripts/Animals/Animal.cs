@@ -5,6 +5,8 @@ using UnityEngine.UI;
 
 public class Animal : MonoBehaviour
 {
+    public Image m_image;
+
     public float MateTime { get; private set; } = 5;
 
     float m_hunger;
@@ -21,7 +23,10 @@ public class Animal : MonoBehaviour
         Wait,
         Explore,
         ApproachMate,
-        Mate
+        Mate,
+        Grazing,
+        Chasing,
+        Dead
     }
     public eState State { get; private set; }
     float m_timeRemaining;
@@ -40,8 +45,7 @@ public class Animal : MonoBehaviour
     {
         Def = def;
 
-        if(TryGetComponent(out Image image))
-            image.sprite = def.m_visual.m_sprite;
+        m_image.sprite = def.m_visual.m_sprite;
     }
 
     public bool CanMate()
@@ -54,12 +58,12 @@ public class Animal : MonoBehaviour
 
         switch(State)
         {
-            case eState.ApproachMate:
-            case eState.Mate:
-                return false;
+            case eState.Wait:
+            case eState.Explore:
+                return true;
         }
 
-        return true;
+        return false;
     }
 
     void MoveTo(Vector2 target)
@@ -116,6 +120,7 @@ public class Animal : MonoBehaviour
         }
 
         MateTime = Mathf.MoveTowards(MateTime, 0, Time.deltaTime);
+        m_hunger += Time.deltaTime;
 
         switch(State)
         {
@@ -124,6 +129,16 @@ public class Animal : MonoBehaviour
                     if(Mate != null)
                     {
                         MoveToMate();
+                        return;
+                    }
+
+                    if(m_hunger > HUNGER_DIE)
+                    {
+                        gameObject.AddComponent<CanvasGroup>();
+                        Vector3 scale = transform.localScale;
+                        m_image.transform.localScale = new Vector3(m_image.transform.localScale.x, -1, 1);
+                        m_timeRemaining = 1;
+                        State = eState.Dead;
                         return;
                     }
 
@@ -207,6 +222,20 @@ public class Animal : MonoBehaviour
                         MoveTo(new Vector2(radius * Mathf.Cos(angle), radius * Mathf.Sin(angle)));
                         State = eState.Explore;
                     }                    
+                }
+                break;
+
+            case eState.Dead:
+                {
+                    Vector3 pos = transform.localPosition;
+                    pos.z -= Time.deltaTime * 50;
+                    transform.localPosition = pos;
+
+                    m_timeRemaining -= Time.deltaTime;
+                    gameObject.GetComponent<CanvasGroup>().alpha = m_timeRemaining;
+                    
+                    if(m_timeRemaining <= 0)
+                        AnimalController.Instance.Despawn(this);
                 }
                 break;
         }

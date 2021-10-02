@@ -74,4 +74,10 @@ public class AnimalController : Singleton<AnimalController>
 
         return animals[0];
     }
+
+    public void Despawn(Animal animal)
+    {
+        m_animals.Remove(animal);
+        Destroy(animal);
+    }
 }
