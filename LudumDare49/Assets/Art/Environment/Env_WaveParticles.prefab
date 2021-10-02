@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 3484839576916670372}
   - component: {fileID: 7270103364860226239}
   m_Layer: 5
-  m_Name: WaveParticles
+  m_Name: Env_WaveParticles
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
