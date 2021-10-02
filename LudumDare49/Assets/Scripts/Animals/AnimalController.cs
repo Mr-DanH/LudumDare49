@@ -5,6 +5,7 @@ using UnityEngine;
 public class AnimalController : Singleton<AnimalController>
 {
     public Animal m_prefab;
+    public Plant m_plantPrefab;
     public Transform m_island;
 
     [System.Serializable]
@@ -15,7 +16,10 @@ public class AnimalController : Singleton<AnimalController>
     }
     public List<AnimalVisual> m_animalVisuals = new List<AnimalVisual>();
 
+    public AnimalVisual m_plantVisual = new AnimalVisual();
+
     List<Animal> m_animals = new List<Animal>();
+    List<Plant> m_plants = new List<Plant>();
     int m_index;
 
     public class AnimalDef
@@ -25,6 +29,7 @@ public class AnimalController : Singleton<AnimalController>
         //todo: traits
     }
     List<AnimalDef> m_animalDefs = new List<AnimalDef>();
+    AnimalDef m_plantDef;
     
     [System.Serializable]
     public class FoodWeb
@@ -78,15 +83,32 @@ public class AnimalController : Singleton<AnimalController>
         return animal;
     }
 
+    public Plant SpawnPlantAtPosition(Vector3 pos)
+    {
+        //Check for overcrowding
+        foreach(var otherPlant in m_plants)
+        {
+            Vector3 diff = otherPlant.transform.position - pos;
+            if(diff.sqrMagnitude < 100)
+                return null;
+        }
+
+        var plant = Instantiate(m_plantPrefab, pos, Quaternion.identity, m_island);
+        plant.name = m_index++.ToString();
+        m_plants.Add(plant);
+
+        return plant;
+    }
+
     public AnimalDef GetRandomAnimalDef()
     {
         int index = Random.Range(0, m_animalDefs.Count);
         return m_animalDefs[index];
     }
 
-    public Animal GetClosest(Vector3 worldPos, List<Animal> sourceList)
+    public T GetClosest<T>(Vector3 worldPos, List<T> sourceList) where T : MonoBehaviour
     {
-        Animal closestAnimal = null;
+        T closestAnimal = null;
         float closestDistSq = float.MaxValue;
 
         foreach(var animal in sourceList)
@@ -133,9 +155,26 @@ public class AnimalController : Singleton<AnimalController>
         return GetClosest(source.transform.position, animals);
     }
 
+    public Plant FindPlant(Animal source)
+    {
+        List<Plant> plants = m_plants.FindAll(a => a.Scale == 1);
+
+        if(plants.Count == 0)
+            return null;
+            
+        plants.RemoveAll(a => Vector2.Angle(source.transform.localPosition, a.transform.localPosition) > 60);
+
+        return GetClosest(source.transform.position, plants);
+    }
+
     public void Despawn(Animal animal)
     {
         m_animals.Remove(animal);
         Destroy(animal.gameObject);
+    }
+    public void Despawn(Plant plant)
+    {
+        m_plants.Remove(plant);
+        Destroy(plant.gameObject);
     }
 }

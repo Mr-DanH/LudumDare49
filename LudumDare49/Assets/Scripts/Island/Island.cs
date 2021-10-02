@@ -6,13 +6,47 @@ public class Island : Singleton<Island>
 {
     [SerializeField] GameObject islandObjectsContainer;
     [SerializeField] float radius = 200f;
-     public float Radius { get { return radius; } }
-     public float InnerRadius { get { return radius * 0.33f; } }
+
+    public List<float> m_biomeDivisions = new List<float>();
+
+    public float Radius { get { return radius; } }
+    public float InnerRadius { get { return radius * 0.33f; } }
+
+    class Biome
+    {
+        public float m_minAngle;
+        public float m_maxAngle;
+        public float m_fertility;
+    }
+    List<Biome> m_biomes = new List<Biome>();
+
+    float m_plantCheckTime;
+
+    public override void Awake()
+    {
+        base.Awake();
+
+        List<float> fertilities = new List<float>{0, 0.1f, 0.2f, 0.2f};
+
+        for(int i = 0; i < m_biomeDivisions.Count; ++i)
+        {
+            Biome biome = new Biome();
+            biome.m_minAngle = m_biomeDivisions[i];
+            biome.m_maxAngle = m_biomeDivisions[(i + 1) % m_biomeDivisions.Count];
+
+            if(biome.m_maxAngle < biome.m_minAngle)
+                biome.m_maxAngle += 360;
+
+            int fertilityIndex = Random.Range(0, fertilities.Count);
+            biome.m_fertility = fertilities[fertilityIndex];
+            fertilities.RemoveAt(fertilityIndex);
+
+            m_biomes.Add(biome);
+        }        
+    }
 
     bool GetCircleIntersection(float radius, Vector2 from, Vector2 dir, out Vector2 point)
     {
-        //float innerRadius = radius * 0.33f;
-
         Vector2 toMidPoint = -from;
         Vector2 toIntersectionMidpoint = Vector2.Dot(toMidPoint, dir) * dir;
         Vector2 midpoint = from + toIntersectionMidpoint;
@@ -73,6 +107,33 @@ public class Island : Singleton<Island>
 
     void Update()
     {
+        m_plantCheckTime -= Time.deltaTime;
+
+        if(m_plantCheckTime < 0)
+        {
+            foreach(var biome in m_biomes)
+            {
+                if(Random.value < biome.m_fertility)
+                {
+                    float angle = Random.Range(biome.m_minAngle, biome.m_maxAngle) * Mathf.Deg2Rad;
+                    float radius = Random.Range(Radius * 0.33f, Radius);
+                    Vector2 localPos = new Vector2(radius * Mathf.Cos(angle), radius * Mathf.Sin(angle));
+
+                    AnimalController.Instance.SpawnPlantAtPosition(AnimalController.Instance.m_island.transform.TransformPoint(localPos));
+                }
+
+                //foreach plant
+                // {
+                //     if(Random.value < biome.m_fertility)
+                //     {
+                //         AnimalController.Instance.SpawnPlantAtPosition(Vector3.zero);
+                //         //Spawn plant
+                //     }
+                // }
+            }
+            m_plantCheckTime += 1;
+        }
+
         SortIslandObjects();
     }
 
@@ -117,6 +178,14 @@ public class Island : Singleton<Island>
     {
         Gizmos.DrawWireSphere(transform.position, InnerRadius);
         Gizmos.DrawWireSphere(transform.position, radius);
+
+        foreach(float division in m_biomeDivisions)
+        {
+            Vector2 dir = new Vector2( Mathf.Cos(division * Mathf.Deg2Rad), Mathf.Sin(division * Mathf.Deg2Rad));
+            Vector3 worldDir = transform.TransformVector(dir);
+
+            Gizmos.DrawLine(worldDir * InnerRadius, worldDir * Radius);
+        }
     }
 
 }
