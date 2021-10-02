@@ -78,6 +78,6 @@ public class AnimalController : Singleton<AnimalController>
     public void Despawn(Animal animal)
     {
         m_animals.Remove(animal);
-        Destroy(animal);
+        Destroy(animal.gameObject);
     }
 }
