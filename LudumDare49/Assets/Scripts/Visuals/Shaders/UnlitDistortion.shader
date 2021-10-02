@@ -19,6 +19,7 @@ Shader "LD49/UnlitDistortion"
 		}
         LOD 100
 		Cull Off
+		ZWrite Off
 		Blend SrcAlpha OneMinusSrcAlpha
 
         Pass

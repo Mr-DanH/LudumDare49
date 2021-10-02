@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Env_IslandCoast
-  m_Shader: {fileID: 10753, guid: 0000000000000000f000000000000000, type: 0}
+  m_Shader: {fileID: 4800000, guid: 5dd98dc8f3294ce46afd306a56c72d18, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -41,14 +41,14 @@ Material:
         m_Offset: {x: 0, y: 0}
     - _Dist1Tex:
         m_Texture: {fileID: 2800000, guid: 6a89b810307418042b0c08175a578fa7, type: 3}
-        m_Scale: {x: 1, y: 1}
+        m_Scale: {x: 4, y: 4}
         m_Offset: {x: 0, y: 0}
     - _EmissionMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: 5166d0e39b8aeb045bf39f77904ef951, type: 3}
+        m_Texture: {fileID: 2800000, guid: 0d0d149919ed6fe498202e594a45a74d, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MetallicGlossMap:
@@ -68,7 +68,7 @@ Material:
     - _BumpScale: 1
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
-    - _DistEffect1: 0
+    - _DistEffect1: 0.073
     - _DstBlend: 0
     - _EnableExternalAlpha: 0
     - _GlossMapScale: 1
@@ -89,5 +89,5 @@ Material:
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _Flip: {r: 1, g: 1, b: 1, a: 1}
     - _RendererColor: {r: 1, g: 1, b: 1, a: 1}
-    - _ScrollSpeedDist: {r: 0, g: 1.21, b: 0, a: 0}
+    - _ScrollSpeedDist: {r: 0.5, g: 0.5, b: 0, a: 0}
   m_BuildTextureStacks: []
