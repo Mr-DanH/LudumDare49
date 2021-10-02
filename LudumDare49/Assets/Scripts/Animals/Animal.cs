@@ -188,7 +188,7 @@ public class Animal : MonoBehaviour
                     {
                         if(Mate != null)
                         {
-                            var baby = Instantiate(this, (transform.position + Mate.transform.position) / 2, transform.rotation, transform.parent);
+                            var baby = AnimalController.Instance.SpawnAtPosition((transform.position + Mate.transform.position) / 2);
                             baby.Scale = 0.25f;
                             baby.transform.localScale = Vector3.one * baby.Scale;
                             //    Debug.Log("baby " + baby + " " + baby.transform.GetSiblingIndex(), this);
