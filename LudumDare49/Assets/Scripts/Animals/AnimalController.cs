@@ -78,9 +78,9 @@ public class AnimalController : Singleton<AnimalController>
         bool allCollected = false;
         while (!allCollected)
         {
+            yield return null;
             allCollected = currentCollectCountdown == 0;
         }
-        yield return null;
     }
 
     public void SpawnMultipleAtPosition(AnimalDef def, Vector3 pos, int num)
