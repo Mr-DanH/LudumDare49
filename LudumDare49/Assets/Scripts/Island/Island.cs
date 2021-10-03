@@ -12,9 +12,6 @@ public class Island : Singleton<Island>
 
     public List<float> m_biomeDivisions = new List<float>();
 
-    public float Radius { get { return radius; } }
-    public float InnerRadius { get { return radius * 0.33f; } }
-
     class Biome
     {
         public float m_minAngle;
