@@ -40,6 +40,11 @@ public class AnimalController : Singleton<AnimalController>
 
     void Start()
     {
+        Init();
+    }
+
+    void Init()
+    {
         List<AnimalVisual> visuals = new List<AnimalVisual>(m_animalVisuals);
 
         for(int i = 0; i < m_foodWeb.Count; ++i)
@@ -51,6 +56,12 @@ public class AnimalController : Singleton<AnimalController>
             def.m_foodWebIndex = i;
             m_animalDefs.Add(def);
         }
+    }
+
+    public void Reset()
+    {
+        DespawnEverything();
+        Init();
     }
 
     public Dictionary<AnimalDef, int> GatherAnimalIntel()
@@ -211,5 +222,20 @@ public class AnimalController : Singleton<AnimalController>
     public void GetPlants(List<Plant> list)
     {
         list.AddRange(m_plants);
+    }
+
+    void DespawnEverything()
+    {
+        for(int i = 0; i < m_animals.Count; i++)
+        {
+            Destroy(m_animals[i].gameObject);
+        }
+        m_animals.Clear();
+
+        for(int i = 0; i < m_plants.Count; i++)
+        {
+            Destroy(m_plants[i].gameObject);
+        }
+        m_plants.Clear();
     }
 }

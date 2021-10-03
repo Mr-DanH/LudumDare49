@@ -7,6 +7,7 @@ public class Game : Singleton<Game>
     static readonly string Player_Score_Key = "PlayerScoreKey";
 
     [SerializeField] float startingLife;
+    [SerializeField] EndGamePopup endGamePopup;
 
     public float StartingLife { get { return startingLife; } }
 
@@ -15,6 +16,21 @@ public class Game : Singleton<Game>
     Dictionary<AnimalController.AnimalDef, int> lastKnownSpecies;
 
     void Start()
+    {
+        Init();
+    }
+
+    public void Reset()
+    {
+        Init();
+        AnimalController.Instance.Reset();
+        OrdersManager.Instance.Reset();
+        Island.Instance.Reset();
+        ConveyorBelt.Instance.Reset();
+        PlayerUi.Instance.Reset();
+    }
+
+    void Init()
     {
         player = new Player(startingLife);
         Dictionary<AnimalController.AnimalDef, int> animals = AnimalController.Instance.GatherAnimalIntel();
@@ -29,14 +45,17 @@ public class Game : Singleton<Game>
     void Update()
     {
         if (!player.HasLife())
-        {
-            // todo - end menu
-            int savedHighScore = PlayerPrefs.GetInt(Player_Score_Key);
-            if (!PlayerPrefs.HasKey(Player_Score_Key) || savedHighScore < player.CurrentScore)
+        {   
+            int savedHighScore = PlayerPrefs.GetInt(Player_Score_Key, 0);
+            if (savedHighScore < player.CurrentScore)
             {
                 PlayerPrefs.SetInt(Player_Score_Key, player.CurrentScore);
                 PlayerPrefs.Save();
+
+                savedHighScore = player.CurrentScore;
             }
+
+            endGamePopup.Open(savedHighScore, player.CurrentScore);
         }
         else
         {

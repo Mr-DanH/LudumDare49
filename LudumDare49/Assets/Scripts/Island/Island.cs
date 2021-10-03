@@ -26,6 +26,11 @@ public class Island : Singleton<Island>
     {
         base.Awake();
 
+        InitAwake();
+    }
+
+    void InitAwake()
+    {
         List<float> fertilities = new List<float>{0, 0.04f, 0.06f, 0.08f};
 
         for(int i = 0; i < m_biomeDivisions.Count; ++i)
@@ -47,6 +52,11 @@ public class Island : Singleton<Island>
 
     void Start()
     {
+        InitStart();
+    }
+
+    void InitStart()
+    {
         //Prepopulate some plants
         foreach(var biome in m_biomes)
         {
@@ -59,6 +69,12 @@ public class Island : Singleton<Island>
                 AnimalController.Instance.SpawnPlantAtPosition(AnimalController.Instance.m_island.transform.TransformPoint(localPos));
             }
         }
+    }
+
+    public void Reset()
+    {
+        InitAwake();
+        InitStart();
     }
 
     bool GetCircleIntersection(float radius, Vector2 from, Vector2 dir, out Vector2 point)

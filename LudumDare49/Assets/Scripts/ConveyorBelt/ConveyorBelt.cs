@@ -2,12 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-/*
-    Features:
-    Contains items that it will pool and generate as more are needed.
-    Control the speed of the conveyor belt as in how long the items are available for.
-     -- First pass add timers to the items, oldest to newest
-*/
 public class ConveyorBelt : Singleton<ConveyorBelt>
 {
     [SerializeField] Transform belt;
@@ -25,6 +19,17 @@ public class ConveyorBelt : Singleton<ConveyorBelt>
     public void CreateSpecificItem(AnimalController.AnimalDef animalDef, int numToSpawn)
     {
         CreateItem(animalDef, numToSpawn);
+    }
+
+    public void Reset()
+    {
+        for (int i = 0; i < items.Count; i++)
+        {
+            Destroy(items[i].gameObject);
+        }
+        items.Clear();
+        timer = 0f;
+        nextItemCreation = 0f;
     }
 
     void Update()

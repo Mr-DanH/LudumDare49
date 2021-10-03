@@ -44,3 +44,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   startingLife: 5
+  endGamePopup: {fileID: 0}

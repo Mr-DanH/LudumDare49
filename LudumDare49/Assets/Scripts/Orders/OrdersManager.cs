@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class OrdersManager : MonoBehaviour
+public class OrdersManager : Singleton<OrdersManager>
 {
     class Port
     {
@@ -43,6 +43,18 @@ public class OrdersManager : MonoBehaviour
     {
         EnsureEnoughOrders();
         RefreshOrders();
+    }
+
+    public void Reset()
+    {
+        foreach (var port in ports)
+        {
+           if (port.HasOrder())
+           {
+               Destroy(port.CurrentOrder.gameObject);
+               port.CurrentOrder = null;
+           }
+        }
     }
 
     void RefreshOrders()
