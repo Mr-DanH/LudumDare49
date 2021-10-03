@@ -12,11 +12,12 @@ public class Animal : MonoBehaviour
     public float MateTime { get; private set; } = MATE_TIME;
 
     float m_hunger;
-    float m_life = 60;
+    float m_life = 50;
 
-    const float HUNGER_EAT = 5;
+    const float HUNGER_EAT_CARNIVORE = 7;
+    const float HUNGER_EAT_HERBIVORE = 3;
     const float HUNGER_THOUGHT = 10;
-    const float HUNGER_DIE = 15;
+    const float HUNGER_DIE = 20;
     const float MATE_TIME = 10;
     const float OLD_THOUGHT = 5;
 
@@ -229,9 +230,12 @@ public class Animal : MonoBehaviour
                         return;
                     }
 
-                    if(m_hunger > HUNGER_EAT)
+                    bool isCarnivore = AnimalController.Instance.IsCarnivore(this);
+                    float hungerTarget = isCarnivore ? HUNGER_EAT_CARNIVORE : HUNGER_EAT_HERBIVORE;
+
+                    if(m_hunger > hungerTarget)
                     {
-                        if(AnimalController.Instance.IsCarnivore(this))
+                        if(isCarnivore)
                         {
                             Animal prey = AnimalController.Instance.FindPrey(this);
                             if(prey != null)
