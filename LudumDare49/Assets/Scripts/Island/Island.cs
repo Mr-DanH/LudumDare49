@@ -264,4 +264,8 @@ public class Island : Singleton<Island>
         }
     }
 
+    public Transform GetIslandObjectContainer()
+    {
+        return islandObjectsContainer.transform;
+    }
 }

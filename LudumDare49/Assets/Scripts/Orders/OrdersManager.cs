@@ -99,9 +99,9 @@ public class OrdersManager : Singleton<OrdersManager>
     Order GenerateRandomOrder(Port port)
     {
         AnimalController.AnimalDef animalDef = AnimalController.Instance.GetRandomAnimalDef();
-        Order clone = Instantiate<Order>(orderTemplate, port.Point);
+        Order clone = Instantiate<Order>(orderTemplate, Island.Instance.GetIslandObjectContainer());
         int fulfillmentAmount = Random.Range(minOrderFulfillmentAmount, maxOrderFulfillmentAmount);
-        clone.Init(animalDef, fulfillmentAmount);
+        clone.Init(animalDef, fulfillmentAmount, port.Point);
         return clone;
     }
 }
