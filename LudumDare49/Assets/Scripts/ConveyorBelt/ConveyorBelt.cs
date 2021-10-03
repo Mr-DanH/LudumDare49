@@ -13,12 +13,19 @@ public class ConveyorBelt : Singleton<ConveyorBelt>
 
     List<ConveyorBeltItem> items = new List<ConveyorBeltItem>();
 
+    List<AnimalController.AnimalDef> itemQueue = new List<AnimalController.AnimalDef>();
+
     float timer = 0f;
     float nextItemCreation = 0f;
 
     public void CreateSpecificItem(AnimalController.AnimalDef animalDef, int numToSpawn)
     {
         CreateItem(animalDef, numToSpawn);
+    }
+
+    void Start()
+    {
+        PopulateItemQueue();
     }
 
     public void Reset()
@@ -28,8 +35,10 @@ public class ConveyorBelt : Singleton<ConveyorBelt>
             Destroy(items[i].gameObject);
         }
         items.Clear();
+        itemQueue.Clear();
         timer = 0f;
         nextItemCreation = 0f;
+        PopulateItemQueue();
     }
 
     void Update()
@@ -45,12 +54,37 @@ public class ConveyorBelt : Singleton<ConveyorBelt>
         RemoveDeadItems();
 
         bool shouldCreateNextItem = items.Count < maxBeltItems && nextItemCreation < timer;
-        
         if (shouldCreateNextItem)
         {
-            // todo - find somewhere that tells us how many are spawned from the item
-            CreateItem(AnimalController.Instance.GetRandomAnimalDef(), Random.Range(1, 5));
+            CreateItem(GetNextItemInQueue(), Random.Range(2, 6));
         }
+    }
+
+    void PopulateItemQueue()
+    {
+        List<AnimalController.AnimalDef> defs = AnimalController.Instance.AnimalDefs;
+        itemQueue.AddRange(defs);
+        itemQueue.AddRange(defs);
+
+        itemQueue.Sort(RandomSort);
+    }
+
+    AnimalController.AnimalDef GetNextItemInQueue()
+    {
+        AnimalController.AnimalDef item = itemQueue[0];
+        itemQueue.RemoveAt(0);
+
+        if (itemQueue.Count == 0)
+        {
+            PopulateItemQueue();
+        }
+
+        return item;
+    }
+
+    int RandomSort(AnimalController.AnimalDef A, AnimalController.AnimalDef B)
+    {
+        return Random.Range(-1, 2);
     }
 
     void MoveBelt()

@@ -145,6 +145,8 @@ public class AnimalController : Singleton<AnimalController>
         return m_animalDefs[index];
     }
 
+    public List<AnimalDef> AnimalDefs { get { return m_animalDefs; } }
+
     public T GetClosest<T>(Vector3 worldPos, List<T> sourceList) where T : MonoBehaviour
     {
         T closestAnimal = null;
