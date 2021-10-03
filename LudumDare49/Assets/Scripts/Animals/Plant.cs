@@ -15,6 +15,8 @@ public class Plant : MonoBehaviour
         Color tint = new Color(Random.Range(0.6f, 1f), Random.Range(0.6f, 1f), Random.Range(0.6f, 1f));
         foreach(Image image in images)
             image.color = tint;
+            
+        transform.localScale = Vector3.one * Scale;
     }
 
     void Update()
