@@ -59,6 +59,9 @@ public class Animal : MonoBehaviour
         
         MoveTo(Island.Instance.GetRandomMoveTarget(transform.localPosition, minDegrees, maxDegrees));
         State = eState.Explore;
+
+        m_hunger = Random.value;
+        m_life -= Random.value;
     }
 
     public bool CanMate()

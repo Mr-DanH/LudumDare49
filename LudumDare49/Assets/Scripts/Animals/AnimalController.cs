@@ -177,4 +177,9 @@ public class AnimalController : Singleton<AnimalController>
         m_plants.Remove(plant);
         Destroy(plant.gameObject);
     }
+
+    public void GetPlants(List<Plant> list)
+    {
+        list.AddRange(m_plants);
+    }
 }
