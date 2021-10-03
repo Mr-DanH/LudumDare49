@@ -19,6 +19,7 @@ public class Order : MonoBehaviour
     [SerializeField] CrateScriptableObject crateScriptableObject;
 
     public AnimalController.AnimalDef AnimalDef { get; private set; }
+    public Transform Port { get; private set; }
     public bool Collected { get { return state == eOrderState.Collected; } }
 
     public Vector3 m_sailDownPos;
@@ -32,9 +33,10 @@ public class Order : MonoBehaviour
         m_sailUpPos = CollectButton.transform.localPosition;
     }
 
-    public void Init(AnimalController.AnimalDef def, int fulfillment)
+    public void Init(AnimalController.AnimalDef def, int fulfillment, Transform port)
     {
         AnimalDef = def;
+        Port = port;
         animal.sprite = AnimalDef.m_visual.m_sprite;
         fulfillmentNum = fulfillment;
         fulfillmentAmount.sprite = crateScriptableObject.GetBoatNum((int)fulfillmentNum);
@@ -61,24 +63,26 @@ public class Order : MonoBehaviour
 
     IEnumerator<YieldInstruction> CollectOrder()
     {
-        yield return StartCoroutine(AnimalController.Instance.CollectOrder(transform.parent.localPosition, AnimalDef, (int)fulfillmentNum));
+        yield return StartCoroutine(AnimalController.Instance.CollectOrder(Port.localPosition, AnimalDef, (int)fulfillmentNum));
 
-        Vector2 localDir = transform.parent.localPosition.normalized;
+        Vector2 portPos = Port.localPosition;
+        Vector2 localDir = portPos.normalized;
 
         yield return StartCoroutine(AnimateSail(m_sailUpPos, m_sailDownPos));
-        yield return StartCoroutine(AnimatePos(Vector3.zero, localDir * 500));
+        yield return StartCoroutine(AnimatePos(portPos, portPos + (localDir * 500)));
         
         state = eOrderState.Collected;
     }
 
     IEnumerator<YieldInstruction> Arrive()
     {
-        Vector2 localDir = transform.parent.localPosition.normalized;
+        Vector2 portPos = Port.localPosition;
+        Vector2 localDir = portPos.normalized;
 
         CollectButton.transform.localPosition = m_sailDownPos;
         progressBar.transform.parent.gameObject.SetActive(false);
 
-        yield return StartCoroutine(AnimatePos(localDir * 500, Vector3.zero));
+        yield return StartCoroutine(AnimatePos(portPos + (localDir * 500), portPos));
         yield return StartCoroutine(AnimateSail(m_sailDownPos, m_sailUpPos));
         
         progressBar.transform.parent.gameObject.SetActive(true);

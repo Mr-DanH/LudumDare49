@@ -22,6 +22,8 @@ public class Island : Singleton<Island>
 
     float m_plantCheckTime;
 
+    List<Plant> m_plants = new List<Plant>(); //Re-usable buffer
+
     public override void Awake()
     {
         base.Awake();
@@ -173,6 +175,7 @@ public class Island : Singleton<Island>
 
         if(m_plantCheckTime < 0)
         {
+            UnityEngine.Profiling.Profiler.BeginSample("SpawnNewPlant");
             foreach(var biome in m_biomes)
             {
                 if(Random.value < biome.m_fertility)
@@ -184,11 +187,13 @@ public class Island : Singleton<Island>
                     AnimalController.Instance.SpawnPlantAtPosition(AnimalController.Instance.m_island.transform.TransformPoint(localPos));
                 }
             }
+            UnityEngine.Profiling.Profiler.EndSample();
 
-            List<Plant> plants = new List<Plant>();
-            AnimalController.Instance.GetPlants(plants);
+            m_plants.Clear();
+            AnimalController.Instance.GetPlants(m_plants);
 
-            foreach (var plant in plants)
+            UnityEngine.Profiling.Profiler.BeginSample("PropagatePlant");
+            foreach (var plant in m_plants)
             {
                 if(plant.Scale < 1)
                     continue;
@@ -206,6 +211,7 @@ public class Island : Singleton<Island>
                 if(Random.value < biome.m_fertility * 2)
                     AnimalController.Instance.SpawnPlantAtPosition(AnimalController.Instance.m_island.transform.TransformPoint(localPos));
             }
+            UnityEngine.Profiling.Profiler.EndSample();
 
             m_plantCheckTime += 1;
         }
@@ -213,24 +219,45 @@ public class Island : Singleton<Island>
         SortIslandObjects();
     }
 
+    List<IslandObjectSortDistance> m_islandSortPool = new List<IslandObjectSortDistance>();
+
+    public void RegisterBillboard(Billboard billboard)
+    {
+        RectTransform child = billboard.GetComponent<RectTransform>();
+        m_islandSortPool.Add(new IslandObjectSortDistance(child, 0));
+    }    
+    public void UnregisterBillboard(Billboard billboard)
+    {
+        RectTransform child = billboard.GetComponent<RectTransform>();
+        for(int i = 0; i < m_islandSortPool.Count; ++i)
+        {
+            if(m_islandSortPool[i].Child == child)
+            {
+                m_islandSortPool.RemoveAt(i);
+                break;
+            }
+        }
+    }
+
+    public bool test;
+
     void SortIslandObjects()
     {
-        Billboard[] allChildren = islandObjectsContainer.GetComponentsInChildren<Billboard>();
-        List<IslandObjectSortDistance> distanceFromCamera = new List<IslandObjectSortDistance>();
+        UnityEngine.Profiling.Profiler.BeginSample("SortIslandObjects " + m_islandSortPool.Count);
 
-        for(int i = 0; i < allChildren.Length; i++)
+        Vector3 cameraPos = Camera.main.transform.position;
+
+        foreach(var item in m_islandSortPool)
+            item.Distance = (item.Child.position - cameraPos).sqrMagnitude;
+
+        m_islandSortPool.Sort(SortByDistance);
+
+        for(int j = 0; j < m_islandSortPool.Count; j++)
         {
-            RectTransform child = allChildren[i].GetComponent<RectTransform>();
-            float distance = Vector3.Distance(child.position, Camera.main.transform.position);
-            distanceFromCamera.Add(new IslandObjectSortDistance(child, distance));
+            m_islandSortPool[j].Child.SetSiblingIndex(j);
         }
 
-        distanceFromCamera.Sort(SortByDistance);
-
-        for(int j = 0; j < distanceFromCamera.Count; j++)
-        {
-            distanceFromCamera[j].Child.SetSiblingIndex(j);
-        }
+        UnityEngine.Profiling.Profiler.EndSample();
     }
 
     int SortByDistance(IslandObjectSortDistance A, IslandObjectSortDistance B)
@@ -238,7 +265,7 @@ public class Island : Singleton<Island>
         return B.Distance.CompareTo(A.Distance);
     }
 
-    struct IslandObjectSortDistance
+    class IslandObjectSortDistance
     {
         public RectTransform Child;
         public float Distance;
@@ -264,4 +291,8 @@ public class Island : Singleton<Island>
         }
     }
 
+    public Transform GetIslandObjectContainer()
+    {
+        return islandObjectsContainer.transform;
+    }
 }
