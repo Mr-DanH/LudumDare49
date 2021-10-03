@@ -25,6 +25,7 @@ public class OrdersManager : MonoBehaviour
     [SerializeField] List<Transform> portPoints;
     [SerializeField] int minOrderFulfillmentAmount;
     [SerializeField] int maxOrderFulfillmentAmount;
+    [SerializeField] int pointsPerOrder = 1;
 
     public int m_numOrders = 3;
 
@@ -56,7 +57,7 @@ public class OrdersManager : MonoBehaviour
                 order.Refresh(numOnIsland);
                 if (order.Collected)
                 {
-                    // todo - points!
+                    Game.Instance.IncreaseScore(pointsPerOrder);
                     port.CurrentOrder = null;
                     Destroy(order.gameObject);
                 }
