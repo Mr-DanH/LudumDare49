@@ -207,6 +207,7 @@ MonoBehaviour:
   spawnNum: {fileID: 3906398369718677043}
   invalid: {fileID: 8476613062849796488}
   parachute: {fileID: 4254252590584906346}
+  main: {fileID: 726596249652712755}
   crateScriptableObject: {fileID: 11400000, guid: 176917ba41ce8b44bbdd85c19e9c6e4a, type: 2}
 --- !u!1 &4254252590584906346
 GameObject:
