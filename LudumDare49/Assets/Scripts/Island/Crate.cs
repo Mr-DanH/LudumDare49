@@ -9,6 +9,7 @@ public class Crate : MonoBehaviour
     [SerializeField] Image spawnNum;
     [SerializeField] GameObject invalid;
     [SerializeField] GameObject parachute;
+    [SerializeField] RectTransform main;
     [SerializeField] CrateScriptableObject crateScriptableObject;
 
     public AnimalController.AnimalDef AnimalDef { get; private set; }
@@ -30,5 +31,10 @@ public class Crate : MonoBehaviour
     public void SetInvalid(bool isInvalid)
     {
         invalid.SetActive(isInvalid);
+    }
+
+    public void MoveUpCrate()
+    {
+        main.transform.localPosition = new Vector3(0, 100, 0);
     }
 }

@@ -4,13 +4,10 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-/*
-    Features:
-    Each item will have 1 type of animal with a random amount of them.
-*/
 public class ConveyorBeltItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
     [SerializeField] Crate crate;
+
     [SerializeField] RectTransform island;
     [SerializeField] int startingSiblingIndex = 2;
 
@@ -20,6 +17,11 @@ public class ConveyorBeltItem : MonoBehaviour, IBeginDragHandler, IDragHandler, 
     [SerializeField] AnimationCurve fallingMovement;
     [SerializeField] Vector2 startingPos = new Vector2(720, 35);
     [SerializeField] Vector2 endingPos = new Vector2(118, -122);
+
+    [Header("Drag")]
+    [SerializeField] Vector3 dragScale = new Vector3(0.5f, 0.5f, 0.5f);
+    [SerializeField] GameObject target;
+
     float timer = 0;
 
     public bool Removable { get; private set; }
@@ -33,6 +35,7 @@ public class ConveyorBeltItem : MonoBehaviour, IBeginDragHandler, IDragHandler, 
         RectTransform rectTransform = transform as RectTransform;
         rectTransform.SetSiblingIndex(startingSiblingIndex);
         crate.Init(numToSpawn, animalDef);
+        target.SetActive(false);
         gameObject.SetActive(true);
     }
 
@@ -64,6 +67,8 @@ public class ConveyorBeltItem : MonoBehaviour, IBeginDragHandler, IDragHandler, 
     void IBeginDragHandler.OnBeginDrag(PointerEventData data)
     {
         isDragging = true;
+        transform.localScale = dragScale;
+        crate.MoveUpCrate();
     }
 
     void IDragHandler.OnDrag(PointerEventData data)
@@ -79,6 +84,7 @@ public class ConveyorBeltItem : MonoBehaviour, IBeginDragHandler, IDragHandler, 
             isOnIsland = targetIslandPos.magnitude <= Island.Instance.Radius;
 
             crate.SetInvalid(!isOnIsland);
+            target.SetActive(isOnIsland);
         }
     }
 

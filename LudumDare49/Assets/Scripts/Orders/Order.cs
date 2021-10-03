@@ -18,10 +18,12 @@ public class Order : MonoBehaviour
     [SerializeField] Button CollectButton;
     [SerializeField] CrateScriptableObject crateScriptableObject;
     public Transform m_boatImage;
+    public GameObject m_readyOutline;
 
     public AnimalController.AnimalDef AnimalDef { get; private set; }
     public Transform Port { get; private set; }
     public bool Collected { get { return state == eOrderState.Collected; } }
+    public int PendingCollectionCount { get; set; }
 
     public Vector3 m_sailDownPos;
     Vector3 m_sailUpPos;
@@ -41,6 +43,7 @@ public class Order : MonoBehaviour
         animal.sprite = AnimalDef.m_visual.m_sprite;
         fulfillmentNum = fulfillment;
         fulfillmentAmount.sprite = crateScriptableObject.GetBoatNum((int)fulfillmentNum);
+        m_readyOutline.gameObject.SetActive(false);
         
         StartCoroutine(Arrive());
     }
@@ -52,10 +55,12 @@ public class Order : MonoBehaviour
 
         bool isCollectable = prop >= 1 && state == eOrderState.Fufilling;
         CollectButton.interactable = isCollectable;
+        m_readyOutline.gameObject.SetActive(isCollectable);
     }
 
     public void OnCollect()
     {
+        m_readyOutline.gameObject.SetActive(false);
         progressBar.transform.parent.gameObject.SetActive(false);
 
         state = eOrderState.Processing;
@@ -64,7 +69,12 @@ public class Order : MonoBehaviour
 
     IEnumerator<YieldInstruction> CollectOrder()
     {
-        yield return StartCoroutine(AnimalController.Instance.CollectOrder(Port.localPosition, AnimalDef, (int)fulfillmentNum));
+        PendingCollectionCount = (int)fulfillmentNum;
+
+        AnimalController.Instance.CollectOrder(this, Port.localPosition, AnimalDef, (int)fulfillmentNum);
+
+        while(PendingCollectionCount > 0)
+            yield return null;
 
         Vector2 portPos = Port.localPosition;
         Vector2 localDir = portPos.normalized;
