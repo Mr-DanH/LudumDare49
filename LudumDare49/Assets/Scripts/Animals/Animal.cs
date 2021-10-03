@@ -7,15 +7,18 @@ public class Animal : MonoBehaviour
 {
     public Image m_image;
     public GameObject m_hungry;
+    public GameObject m_old;
 
     public float MateTime { get; private set; } = MATE_TIME;
 
     float m_hunger;
+    float m_life = 60;
 
     const float HUNGER_EAT = 5;
     const float HUNGER_THOUGHT = 10;
     const float HUNGER_DIE = 15;
     const float MATE_TIME = 10;
+    const float OLD_THOUGHT = 5;
 
     Vector2 m_from;
     Vector2 m_target;
@@ -52,6 +55,7 @@ public class Animal : MonoBehaviour
         m_image.sprite = def.m_visual.m_sprite;
 
         m_hungry.SetActive(false);
+        m_old.SetActive(false);
         
         MoveTo(Island.Instance.GetRandomMoveTarget(transform.localPosition, minDegrees, maxDegrees));
         State = eState.Explore;
@@ -137,6 +141,7 @@ public class Animal : MonoBehaviour
     public void Kill()
     {
         m_hungry.SetActive(false);
+        m_old.SetActive(false);
 
         gameObject.AddComponent<CanvasGroup>();
         Vector3 scale = transform.localScale;
@@ -155,6 +160,7 @@ public class Animal : MonoBehaviour
 
         MateTime = Mathf.MoveTowards(MateTime, 0, Time.deltaTime);
         m_hunger += Time.deltaTime;
+        m_life -= Time.deltaTime;
 
         if(State != eState.Dead && m_hunger > HUNGER_DIE)
         {
@@ -162,8 +168,36 @@ public class Animal : MonoBehaviour
             return;
         }
 
-        if(State != eState.Dead && m_hunger > HUNGER_THOUGHT)
-            m_hungry.SetActive(true);
+        if(State != eState.Dead && m_life < 0)
+        {
+            Kill();
+            return;
+        }
+
+        if(State != eState.Dead)
+        {
+            float timeToStarve = HUNGER_DIE - m_hunger;
+            float timeToOldAge = m_life;
+
+            bool showHungry = (m_hunger > HUNGER_THOUGHT);
+            bool showOldAge = (m_life < OLD_THOUGHT);
+
+            if(showHungry != showOldAge)
+            {
+                m_hungry.SetActive(showHungry);
+                m_old.SetActive(showOldAge);
+            }
+            else if (showHungry && showOldAge)
+            {                
+                m_hungry.SetActive(timeToStarve <= timeToOldAge);
+                m_old.SetActive(timeToStarve > timeToOldAge);
+            }
+            else
+            {                
+                m_hungry.SetActive(false);
+                m_old.SetActive(false);
+            }
+        }        
 
         if (State != eState.Dead && State != eState.Wait)
         {
