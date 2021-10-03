@@ -32,7 +32,8 @@ public class Animal : MonoBehaviour
         Mate,
         Grazing,
         Chasing,
-        Dead
+        Dead,
+        Collecting
     }
     public eState State { get; private set; }
     float m_timeRemaining;
@@ -150,6 +151,21 @@ public class Animal : MonoBehaviour
         State = eState.Dead;
     }
 
+    public void Collect()
+    {
+        m_hungry.SetActive(false);
+        m_old.SetActive(false);
+
+        gameObject.AddComponent<CanvasGroup>();
+        m_timeRemaining = 1;
+        State = eState.Collecting;
+    }
+
+    bool IsFree()
+    {
+        return State != eState.Dead && State != eState.Collecting;
+    }
+
     void Update()
     {
         if(Scale < 1)
@@ -162,19 +178,19 @@ public class Animal : MonoBehaviour
         m_hunger += Time.deltaTime;
         m_life -= Time.deltaTime;
 
-        if(State != eState.Dead && m_hunger > HUNGER_DIE)
+        if(IsFree() && m_hunger > HUNGER_DIE)
         {
             Kill();
             return;
         }
 
-        if(State != eState.Dead && m_life < 0)
+        if(IsFree() && m_life < 0)
         {
             Kill();
             return;
         }
 
-        if(State != eState.Dead)
+        if(IsFree())
         {
             float timeToStarve = HUNGER_DIE - m_hunger;
             float timeToOldAge = m_life;
@@ -199,7 +215,7 @@ public class Animal : MonoBehaviour
             }
         }        
 
-        if (State != eState.Dead && State != eState.Wait)
+        if (IsFree() && State != eState.Wait)
         {
             Transform camera = Camera.main.transform;
             Vector3 direction = (Vector3)m_target - transform.localPosition;
@@ -388,6 +404,21 @@ public class Animal : MonoBehaviour
                     
                     if(m_timeRemaining <= 0)
                         AnimalController.Instance.Despawn(this);
+                }
+                break;
+            case eState.Collecting:
+                {
+                    Vector3 pos = transform.localPosition;
+                    pos.z -= Time.deltaTime * 50;
+                    transform.localPosition = pos;
+
+                    m_timeRemaining -= Time.deltaTime;
+                    gameObject.GetComponent<CanvasGroup>().alpha = m_timeRemaining;
+                    
+                    if(m_timeRemaining <= 0)
+                    {
+                        AnimalController.Instance.Despawn(this, collected: true);
+                    }
                 }
                 break;
         }

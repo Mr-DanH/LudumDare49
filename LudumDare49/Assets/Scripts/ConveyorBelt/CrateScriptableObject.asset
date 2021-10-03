@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dda709efdb695e14bbcba13e78b5ba3b, type: 3}
+  m_Name: CrateScriptableObject
+  m_EditorClassIdentifier: 
+  crateNumberVisuals:
+  - {fileID: 21300000, guid: 7559639f9981d2740bc2e13ee7a1c08e, type: 3}
+  - {fileID: 21300000, guid: 23f059a2aeb2a5d44bb47998c3af69ac, type: 3}
+  - {fileID: 21300000, guid: c012fbd63a6283947b141d1ff3013636, type: 3}
+  - {fileID: 21300000, guid: 63f930dfc32f5c740bc383b57d468524, type: 3}
+  - {fileID: 21300000, guid: 48cb037368d773849adf978ffddbc443, type: 3}
+  - {fileID: 21300000, guid: 4c009d22afdecc44ab262a2906c542a6, type: 3}
+  - {fileID: 21300000, guid: 7867e853c0ad14c458c11228b8023794, type: 3}
+  - {fileID: 21300000, guid: ce9f27b2faeee2b45ba558710770eda0, type: 3}
+  - {fileID: 21300000, guid: 63488d722b32ed041863a3e5edaab988, type: 3}
