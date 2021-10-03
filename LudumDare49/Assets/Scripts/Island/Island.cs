@@ -26,7 +26,7 @@ public class Island : Singleton<Island>
     {
         base.Awake();
 
-        List<float> fertilities = new List<float>{0, 0.1f, 0.2f, 0.2f};
+        List<float> fertilities = new List<float>{0, 0.04f, 0.06f, 0.08f};
 
         for(int i = 0; i < m_biomeDivisions.Count; ++i)
         {
@@ -50,7 +50,7 @@ public class Island : Singleton<Island>
         //Prepopulate some plants
         foreach(var biome in m_biomes)
         {
-            for(float i = 0; i < biome.m_fertility; i += 0.05f) 
+            for(float i = 0; i < biome.m_fertility; i += 0.02f) 
             {
                 float angle = Random.Range(biome.m_minAngle, biome.m_maxAngle) * Mathf.Deg2Rad;
                 float radius = Random.Range(Radius * 0.33f, Radius);
@@ -133,6 +133,24 @@ public class Island : Singleton<Island>
         AnimalController.Instance.SpawnMultipleAtPosition(animalDef, spawnPos, numToSpawn);
     }
 
+    Biome GetBiomeForAngle(float angle)
+    {
+        foreach(var biome in m_biomes)
+        {
+            if(biome.m_minAngle <= angle && biome.m_maxAngle >= angle)
+                return biome;
+        }
+
+        angle += 360;
+        foreach(var biome in m_biomes)
+        {
+            if(biome.m_minAngle <= angle && biome.m_maxAngle >= angle)
+                return biome;
+        }
+
+        return null;
+    }
+
     void Update()
     {
         m_plantCheckTime -= Time.deltaTime;
@@ -149,16 +167,30 @@ public class Island : Singleton<Island>
 
                     AnimalController.Instance.SpawnPlantAtPosition(AnimalController.Instance.m_island.transform.TransformPoint(localPos));
                 }
-
-                //foreach plant
-                // {
-                //     if(Random.value < biome.m_fertility)
-                //     {
-                //         AnimalController.Instance.SpawnPlantAtPosition(Vector3.zero);
-                //         //Spawn plant
-                //     }
-                // }
             }
+
+            List<Plant> plants = new List<Plant>();
+            AnimalController.Instance.GetPlants(plants);
+
+            foreach (var plant in plants)
+            {
+                if(plant.Scale < 1)
+                    continue;
+
+                float angle = Random.Range(0, 360) * Mathf.Deg2Rad;
+                float radius = 20;
+                Vector2 localPos = (Vector2)plant.transform.localPosition + new Vector2(radius * Mathf.Cos(angle), radius * Mathf.Sin(angle));
+
+                if(localPos.magnitude <= InnerRadius || localPos.magnitude >= Radius)
+                    continue;
+
+                float angleToSpawnPos = Mathf.Atan2(localPos.y, localPos.x) * Mathf.Rad2Deg;
+                var biome = GetBiomeForAngle(angleToSpawnPos);
+                
+                if(Random.value < biome.m_fertility * 2)
+                    AnimalController.Instance.SpawnPlantAtPosition(AnimalController.Instance.m_island.transform.TransformPoint(localPos));
+            }
+
             m_plantCheckTime += 1;
         }
 
