@@ -29,7 +29,7 @@ public class Order : MonoBehaviour
         AnimalDef = def;
         animal.sprite = AnimalDef.m_visual.m_sprite;
         fulfillmentNum = fulfillment;
-        fulfillmentAmount.sprite = crateScriptableObject.GetCrateNum((int)fulfillmentNum);
+        fulfillmentAmount.sprite = crateScriptableObject.GetBoatNum((int)fulfillmentNum);
     }
 
     public void Refresh(int numOnIsland)

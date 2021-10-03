@@ -22,3 +22,13 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 7867e853c0ad14c458c11228b8023794, type: 3}
   - {fileID: 21300000, guid: ce9f27b2faeee2b45ba558710770eda0, type: 3}
   - {fileID: 21300000, guid: 63488d722b32ed041863a3e5edaab988, type: 3}
+  boatNumberVisuals:
+  - {fileID: 21300000, guid: 8b664a4aa01fd3d42b9d5f47f42305d6, type: 3}
+  - {fileID: 21300000, guid: 9d5aee51ee9626042b572f3d3c847be9, type: 3}
+  - {fileID: 21300000, guid: 90e2a0f2191791345a8cee8c139cc5da, type: 3}
+  - {fileID: 21300000, guid: b1d7f84f13db6a040965e1b4d81dccce, type: 3}
+  - {fileID: 21300000, guid: 904196e0c5574dd46b9b86992b59e58e, type: 3}
+  - {fileID: 21300000, guid: 269b37df3c5ca844bb37e3b61654b21f, type: 3}
+  - {fileID: 21300000, guid: a172c82ac9eb8774582aaf6e94852dcc, type: 3}
+  - {fileID: 21300000, guid: 6b46df67371e4f643a350c2498ab25e5, type: 3}
+  - {fileID: 21300000, guid: aa6d875ee5e0810408ab682e6808f315, type: 3}
