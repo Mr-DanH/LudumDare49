@@ -69,7 +69,7 @@ public class AnimalController : Singleton<AnimalController>
         Dictionary<AnimalDef, int> intel = new Dictionary<AnimalDef, int>();
         foreach (var def in m_animalDefs)
         {
-            List<Animal> animalsOfDef = m_animals.FindAll(x=>x.Def == def);
+            List<Animal> animalsOfDef = m_animals.FindAll(x => x.Def == def && x.IsFree());
             intel.Add(def, animalsOfDef.Count);
         }
 
@@ -80,7 +80,7 @@ public class AnimalController : Singleton<AnimalController>
     public void CollectOrder(Order order, Vector2 portPos, AnimalDef def, int numToCollect)
     {
         currentCollectCountdown = numToCollect;
-        List<Animal> animalsOfDef = m_animals.FindAll(x=>x.Def == def);
+        List<Animal> animalsOfDef = m_animals.FindAll(x => x.Def == def && x.IsFree());
         for (int i = 0; i < numToCollect; i++)
         {
             animalsOfDef[i].Collect(order, portPos);
