@@ -6,12 +6,14 @@ using UnityEngine.UI;
 public class Animal : MonoBehaviour
 {
     public Image m_image;
+    public GameObject m_hungry;
 
     public float MateTime { get; private set; } = MATE_TIME;
 
     float m_hunger;
 
     const float HUNGER_EAT = 5;
+    const float HUNGER_THOUGHT = 10;
     const float HUNGER_DIE = 15;
     const float MATE_TIME = 10;
 
@@ -48,6 +50,8 @@ public class Animal : MonoBehaviour
     {
         Def = def;
         m_image.sprite = def.m_visual.m_sprite;
+
+        m_hungry.SetActive(false);
         
         MoveTo(Island.Instance.GetRandomMoveTarget(transform.localPosition, minDegrees, maxDegrees));
         State = eState.Explore;
@@ -132,6 +136,8 @@ public class Animal : MonoBehaviour
 
     public void Kill()
     {
+        m_hungry.SetActive(false);
+
         gameObject.AddComponent<CanvasGroup>();
         Vector3 scale = transform.localScale;
         m_image.transform.localScale = new Vector3(m_image.transform.localScale.x, -1, 1);
@@ -155,6 +161,9 @@ public class Animal : MonoBehaviour
             Kill();
             return;
         }
+
+        if(State != eState.Dead && m_hunger > HUNGER_THOUGHT)
+            m_hungry.SetActive(true);
 
         if (State != eState.Dead && State != eState.Wait)
         {
@@ -311,6 +320,7 @@ public class Animal : MonoBehaviour
                             Prey.Kill();
                             Prey = null;
                             m_hunger = 0;
+                            m_hungry.SetActive(false);
 
                             m_timeRemaining = 1;
                             State = eState.Wait;
@@ -323,9 +333,10 @@ public class Animal : MonoBehaviour
                             AnimalController.Instance.Despawn(Plant);
                             Plant = null;
                             m_hunger = 0;
+                            m_hungry.SetActive(false);
 
                             m_timeRemaining = 1;
-                            State = eState.Wait;
+                            State = eState.Wait;                            
                         }
                     }
 
