@@ -8,6 +8,10 @@ public class CrateDrop : MonoBehaviour
     [SerializeField] AnimationCurve fallCurve;
     [SerializeField] float startingHeight;
     [SerializeField] float duration;
+    [SerializeField] RectTransform floatRotationPoint;
+    [SerializeField] AnimationCurve floatingRotationCurve;
+    [SerializeField] float leftAngle;
+    [SerializeField] float rightAngle;
 
     float timer;
     System.Action<AnimalController.AnimalDef, int, Vector3> callback;
@@ -31,8 +35,12 @@ public class CrateDrop : MonoBehaviour
         while (t < 1)
         {
             timer += Time.deltaTime;
-            t = fallCurve.Evaluate(timer/duration);
+            float time = timer/duration;
+            t = fallCurve.Evaluate(time);
             transform.position = Vector3.Lerp(startingPos, m_SpawnPos, t);
+
+            float floatingT = floatingRotationCurve.Evaluate(time);
+            floatRotationPoint.RotateAround(floatRotationPoint.position, Vector3.up, Mathf.Lerp(leftAngle, rightAngle, floatingT));
             yield return null;
         }
 
