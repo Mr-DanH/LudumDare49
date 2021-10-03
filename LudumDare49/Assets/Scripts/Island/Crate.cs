@@ -9,7 +9,7 @@ public class Crate : MonoBehaviour
     [SerializeField] Image spawnNum;
     [SerializeField] GameObject invalid;
     [SerializeField] GameObject parachute;
-    [SerializeField] List<Sprite> spawnNumbers;
+    [SerializeField] CrateScriptableObject crateScriptableObject;
 
     public AnimalController.AnimalDef AnimalDef { get; private set; }
     public int NumToSpawn { get; private set; }
@@ -20,7 +20,7 @@ public class Crate : MonoBehaviour
         NumToSpawn = numToSpawn;
 
         animal.sprite = AnimalDef.m_visual.m_sprite;
-        spawnNum.sprite = spawnNumbers[numToSpawn - 1];
+        spawnNum.sprite = crateScriptableObject.GetCrateNum(numToSpawn);
 
         parachute.SetActive(useParachute);
         invalid.SetActive(false);

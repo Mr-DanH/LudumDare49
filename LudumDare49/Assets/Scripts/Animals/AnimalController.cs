@@ -51,11 +51,36 @@ public class AnimalController : Singleton<AnimalController>
             def.m_foodWebIndex = i;
             m_animalDefs.Add(def);
         }
+    }
 
-        // SpawnAtPosition(m_animalDefs[0], Vector2.zero);
-        // SpawnAtPosition(m_animalDefs[0], Vector2.zero);
-        // SpawnAtPosition(m_animalDefs[1], Vector2.zero);
-        // SpawnAtPosition(m_animalDefs[1], Vector2.zero);
+    public Dictionary<AnimalDef, int> GatherAnimalIntel()
+    {
+        Dictionary<AnimalDef, int> intel = new Dictionary<AnimalDef, int>();
+        foreach (var def in m_animalDefs)
+        {
+            List<Animal> animalsOfDef = m_animals.FindAll(x=>x.Def == def);
+            intel.Add(def, animalsOfDef.Count);
+        }
+
+        return intel;
+    }
+
+    int currentCollectCountdown = 0;
+    public IEnumerator<YieldInstruction> CollectOrder(AnimalDef def, int numToCollect)
+    {
+        currentCollectCountdown = numToCollect;
+        List<Animal> animalsOfDef = m_animals.FindAll(x=>x.Def == def);
+        for (int i = 0; i < numToCollect; i++)
+        {
+            animalsOfDef[i].Collect();
+        }
+
+        bool allCollected = false;
+        while (!allCollected)
+        {
+            yield return null;
+            allCollected = currentCollectCountdown == 0;
+        }
     }
 
     public void SpawnMultipleAtPosition(AnimalDef def, Vector3 pos, int num)
@@ -167,10 +192,15 @@ public class AnimalController : Singleton<AnimalController>
         return GetClosest(source.transform.position, plants);
     }
 
-    public void Despawn(Animal animal)
+    public void Despawn(Animal animal, bool collected = false)
     {
         m_animals.Remove(animal);
         Destroy(animal.gameObject);
+
+        if (collected)
+        {
+            currentCollectCountdown--;
+        }
     }
     public void Despawn(Plant plant)
     {
