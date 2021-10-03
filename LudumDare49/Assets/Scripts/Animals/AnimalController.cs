@@ -77,20 +77,13 @@ public class AnimalController : Singleton<AnimalController>
     }
 
     int currentCollectCountdown = 0;
-    public IEnumerator<YieldInstruction> CollectOrder(Vector2 portPos, AnimalDef def, int numToCollect)
+    public void CollectOrder(Order order, Vector2 portPos, AnimalDef def, int numToCollect)
     {
         currentCollectCountdown = numToCollect;
         List<Animal> animalsOfDef = m_animals.FindAll(x=>x.Def == def);
         for (int i = 0; i < numToCollect; i++)
         {
-            animalsOfDef[i].Collect(portPos);
-        }
-
-        bool allCollected = false;
-        while (!allCollected)
-        {
-            yield return null;
-            allCollected = currentCollectCountdown == 0;
+            animalsOfDef[i].Collect(order, portPos);
         }
     }
 
@@ -206,15 +199,10 @@ public class AnimalController : Singleton<AnimalController>
         return GetClosest(source.transform.position, plants);
     }
 
-    public void Despawn(Animal animal, bool collected = false)
+    public void Despawn(Animal animal)
     {
         m_animals.Remove(animal);
         Destroy(animal.gameObject);
-
-        if (collected)
-        {
-            currentCollectCountdown--;
-        }
     }
     public void Despawn(Plant plant)
     {

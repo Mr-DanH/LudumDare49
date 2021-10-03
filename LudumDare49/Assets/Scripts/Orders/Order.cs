@@ -23,6 +23,7 @@ public class Order : MonoBehaviour
     public AnimalController.AnimalDef AnimalDef { get; private set; }
     public Transform Port { get; private set; }
     public bool Collected { get { return state == eOrderState.Collected; } }
+    public int PendingCollectionCount { get; set; }
 
     public Vector3 m_sailDownPos;
     Vector3 m_sailUpPos;
@@ -68,7 +69,12 @@ public class Order : MonoBehaviour
 
     IEnumerator<YieldInstruction> CollectOrder()
     {
-        yield return StartCoroutine(AnimalController.Instance.CollectOrder(Port.localPosition, AnimalDef, (int)fulfillmentNum));
+        PendingCollectionCount = (int)fulfillmentNum;
+
+        AnimalController.Instance.CollectOrder(this, Port.localPosition, AnimalDef, (int)fulfillmentNum);
+
+        while(PendingCollectionCount > 0)
+            yield return null;
 
         Vector2 portPos = Port.localPosition;
         Vector2 localDir = portPos.normalized;
