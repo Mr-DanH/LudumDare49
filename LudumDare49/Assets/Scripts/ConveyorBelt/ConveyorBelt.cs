@@ -71,13 +71,13 @@ public class ConveyorBelt : Singleton<ConveyorBelt>
 
     AnimalController.AnimalDef GetNextItemInQueue()
     {
-        AnimalController.AnimalDef item = itemQueue[0];
-        itemQueue.RemoveAt(0);
-
         if (itemQueue.Count == 0)
         {
             PopulateItemQueue();
         }
+
+        AnimalController.AnimalDef item = itemQueue[0];
+        itemQueue.RemoveAt(0);
 
         return item;
     }
