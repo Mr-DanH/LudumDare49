@@ -121,6 +121,9 @@ public class AnimalController : Singleton<AnimalController>
 
     public Plant SpawnPlantAtPosition(Vector3 pos)
     {
+        if(m_plants.Count >= 500)
+            return null;
+
         //Check for overcrowding
         foreach(var otherPlant in m_plants)
         {
