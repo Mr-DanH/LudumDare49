@@ -13,7 +13,8 @@ public class ConveyorBelt : Singleton<ConveyorBelt>
     [SerializeField] Transform belt;
     [SerializeField] ConveyorBeltItem itemTemplate;
     [SerializeField] int maxBeltItems;
-    [SerializeField] float maxItemCreationDelay;
+    [SerializeField] float minItemCreationDelay = 1f;
+    [SerializeField] float maxItemCreationDelay = 5f;
     [SerializeField] float itemDuration;
 
     List<ConveyorBeltItem> items = new List<ConveyorBeltItem>();
@@ -61,7 +62,7 @@ public class ConveyorBelt : Singleton<ConveyorBelt>
         ConveyorBeltItem clone = Instantiate<ConveyorBeltItem>(itemTemplate, belt);
         clone.Init(numToSpawn, animalDef);
         items.Add(clone);
-        nextItemCreation = timer + Random.Range(0.75f, maxItemCreationDelay);
+        nextItemCreation = timer + Random.Range(minItemCreationDelay, maxItemCreationDelay);
     }
 
     void RemoveDeadItems()

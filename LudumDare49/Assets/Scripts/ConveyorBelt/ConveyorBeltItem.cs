@@ -12,6 +12,7 @@ public class ConveyorBeltItem : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 {
     [SerializeField] Crate crate;
     [SerializeField] RectTransform island;
+    [SerializeField] int startingSiblingIndex = 2;
 
 
     [Header("Belt")]
@@ -29,6 +30,8 @@ public class ConveyorBeltItem : MonoBehaviour, IBeginDragHandler, IDragHandler, 
     public void Init(int numToSpawn, AnimalController.AnimalDef animalDef)
     {
         transform.localPosition = startingPos;
+        RectTransform rectTransform = transform as RectTransform;
+        rectTransform.SetSiblingIndex(startingSiblingIndex);
         crate.Init(numToSpawn, animalDef);
         gameObject.SetActive(true);
     }

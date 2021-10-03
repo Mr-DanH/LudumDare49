@@ -6,14 +6,19 @@ using UnityEngine.UI;
 public class Animal : MonoBehaviour
 {
     public Image m_image;
+    public GameObject m_hungry;
+    public GameObject m_old;
 
     public float MateTime { get; private set; } = MATE_TIME;
 
     float m_hunger;
+    float m_life = 60;
 
     const float HUNGER_EAT = 5;
+    const float HUNGER_THOUGHT = 10;
     const float HUNGER_DIE = 15;
     const float MATE_TIME = 10;
+    const float OLD_THOUGHT = 5;
 
     Vector2 m_from;
     Vector2 m_target;
@@ -48,6 +53,9 @@ public class Animal : MonoBehaviour
     {
         Def = def;
         m_image.sprite = def.m_visual.m_sprite;
+
+        m_hungry.SetActive(false);
+        m_old.SetActive(false);
         
         MoveTo(Island.Instance.GetRandomMoveTarget(transform.localPosition, minDegrees, maxDegrees));
         State = eState.Explore;
@@ -132,6 +140,9 @@ public class Animal : MonoBehaviour
 
     public void Kill()
     {
+        m_hungry.SetActive(false);
+        m_old.SetActive(false);
+
         gameObject.AddComponent<CanvasGroup>();
         Vector3 scale = transform.localScale;
         m_image.transform.localScale = new Vector3(m_image.transform.localScale.x, -1, 1);
@@ -149,12 +160,44 @@ public class Animal : MonoBehaviour
 
         MateTime = Mathf.MoveTowards(MateTime, 0, Time.deltaTime);
         m_hunger += Time.deltaTime;
+        m_life -= Time.deltaTime;
 
         if(State != eState.Dead && m_hunger > HUNGER_DIE)
         {
             Kill();
             return;
         }
+
+        if(State != eState.Dead && m_life < 0)
+        {
+            Kill();
+            return;
+        }
+
+        if(State != eState.Dead)
+        {
+            float timeToStarve = HUNGER_DIE - m_hunger;
+            float timeToOldAge = m_life;
+
+            bool showHungry = (m_hunger > HUNGER_THOUGHT);
+            bool showOldAge = (m_life < OLD_THOUGHT);
+
+            if(showHungry != showOldAge)
+            {
+                m_hungry.SetActive(showHungry);
+                m_old.SetActive(showOldAge);
+            }
+            else if (showHungry && showOldAge)
+            {                
+                m_hungry.SetActive(timeToStarve <= timeToOldAge);
+                m_old.SetActive(timeToStarve > timeToOldAge);
+            }
+            else
+            {                
+                m_hungry.SetActive(false);
+                m_old.SetActive(false);
+            }
+        }        
 
         if (State != eState.Dead && State != eState.Wait)
         {
@@ -311,6 +354,7 @@ public class Animal : MonoBehaviour
                             Prey.Kill();
                             Prey = null;
                             m_hunger = 0;
+                            m_hungry.SetActive(false);
 
                             m_timeRemaining = 1;
                             State = eState.Wait;
@@ -323,9 +367,10 @@ public class Animal : MonoBehaviour
                             AnimalController.Instance.Despawn(Plant);
                             Plant = null;
                             m_hunger = 0;
+                            m_hungry.SetActive(false);
 
                             m_timeRemaining = 1;
-                            State = eState.Wait;
+                            State = eState.Wait;                            
                         }
                     }
 

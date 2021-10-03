@@ -64,7 +64,8 @@ MonoBehaviour:
     m_sprite: {fileID: 0}
   m_foodWeb:
   - m_eats: 0100000002000000
-  - m_eats: 03000000
-  - m_eats: 04000000
+  - m_eats: 0300000005000000
+  - m_eats: 0400000005000000
+  - m_eats: 
   - m_eats: 
   - m_eats: 

@@ -45,6 +45,22 @@ public class Island : Singleton<Island>
         }        
     }
 
+    void Start()
+    {
+        //Prepopulate some plants
+        foreach(var biome in m_biomes)
+        {
+            for(float i = 0; i < biome.m_fertility; i += 0.05f) 
+            {
+                float angle = Random.Range(biome.m_minAngle, biome.m_maxAngle) * Mathf.Deg2Rad;
+                float radius = Random.Range(Radius * 0.33f, Radius);
+                Vector2 localPos = new Vector2(radius * Mathf.Cos(angle), radius * Mathf.Sin(angle));
+
+                AnimalController.Instance.SpawnPlantAtPosition(AnimalController.Instance.m_island.transform.TransformPoint(localPos));
+            }
+        }
+    }
+
     bool GetCircleIntersection(float radius, Vector2 from, Vector2 dir, out Vector2 point)
     {
         Vector2 toMidPoint = -from;
