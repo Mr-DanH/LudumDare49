@@ -18,6 +18,7 @@ public class Order : MonoBehaviour
     [SerializeField] Button CollectButton;
     [SerializeField] CrateScriptableObject crateScriptableObject;
     public Transform m_boatImage;
+    public GameObject m_readyOutline;
 
     public AnimalController.AnimalDef AnimalDef { get; private set; }
     public Transform Port { get; private set; }
@@ -41,6 +42,7 @@ public class Order : MonoBehaviour
         animal.sprite = AnimalDef.m_visual.m_sprite;
         fulfillmentNum = fulfillment;
         fulfillmentAmount.sprite = crateScriptableObject.GetBoatNum((int)fulfillmentNum);
+        m_readyOutline.gameObject.SetActive(false);
         
         StartCoroutine(Arrive());
     }
@@ -52,10 +54,12 @@ public class Order : MonoBehaviour
 
         bool isCollectable = prop >= 1 && state == eOrderState.Fufilling;
         CollectButton.interactable = isCollectable;
+        m_readyOutline.gameObject.SetActive(isCollectable);
     }
 
     public void OnCollect()
     {
+        m_readyOutline.gameObject.SetActive(false);
         progressBar.transform.parent.gameObject.SetActive(false);
 
         state = eOrderState.Processing;
