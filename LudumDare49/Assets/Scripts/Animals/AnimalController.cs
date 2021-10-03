@@ -170,7 +170,7 @@ public class AnimalController : Singleton<AnimalController>
     {
         List<AnimalDef> defs = m_foodWeb[source.Def.m_foodWebIndex].m_eats.ConvertAll(a => m_animalDefs[a]);
 
-        List<Animal> animals = m_animals.FindAll(a => defs.Contains(a.Def));
+        List<Animal> animals = m_animals.FindAll(a => defs.Contains(a.Def) && a.IsFree());
 
         if(animals.Count == 0)
             return null;
