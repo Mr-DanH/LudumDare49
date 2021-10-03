@@ -165,7 +165,7 @@ public class Animal : MonoBehaviour
         State = eState.Collecting;
     }
 
-    bool IsFree()
+    public bool IsFree()
     {
         return State != eState.Dead && State != eState.Collecting;
     }
