@@ -262,6 +262,7 @@ MonoBehaviour:
   fulfillmentAmount: {fileID: 2547748703397988940}
   CollectButton: {fileID: 5008930253283563544}
   crateScriptableObject: {fileID: 11400000, guid: 176917ba41ce8b44bbdd85c19e9c6e4a, type: 2}
+  m_boatImage: {fileID: 3441586437692803190}
   m_sailDownPos: {x: 4, y: -122, z: 0}
 --- !u!1 &4494142766576467630
 GameObject:

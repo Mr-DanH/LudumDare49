@@ -17,6 +17,7 @@ public class Order : MonoBehaviour
     [SerializeField] Image fulfillmentAmount;
     [SerializeField] Button CollectButton;
     [SerializeField] CrateScriptableObject crateScriptableObject;
+    public Transform m_boatImage;
 
     public AnimalController.AnimalDef AnimalDef { get; private set; }
     public Transform Port { get; private set; }
@@ -101,11 +102,22 @@ public class Order : MonoBehaviour
     
     IEnumerator<YieldInstruction> AnimatePos(Vector3 from, Vector3 to)
     {
+        Transform camera = Camera.main.transform;
+        Vector3 direction = (Vector3)to - from;
+        direction.z = 0;
+
+        Vector3 worldDir = transform.parent.TransformVector(direction);
+        Vector3 cameraLocalDir = camera.InverseTransformVector(worldDir);
+
+        m_boatImage.transform.localScale = new Vector3(-Mathf.Sign(cameraLocalDir.x), 1, 1);
+
         for(float i = 0; i < 3; i += Time.deltaTime)
         {
             transform.localPosition = Vector3.Lerp(from, to, i / 3f);
             yield return null;
         }
+
+        m_boatImage.localScale = new Vector3(-1, 1, 1);
         transform.localPosition = to;
     }
 }
