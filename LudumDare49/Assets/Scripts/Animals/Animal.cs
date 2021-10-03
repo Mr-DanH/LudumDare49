@@ -45,6 +45,7 @@ public class Animal : MonoBehaviour
     public Animal Mate { get; set;}
     public Animal Prey { get; set;}
     public Plant Plant { get; set; }
+    public Order Order { get; set; }
     public Vector2 Target { get { return m_target; } }
 
     public float Scale { get; set; } = 1;
@@ -155,8 +156,10 @@ public class Animal : MonoBehaviour
         State = eState.Dead;
     }
 
-    public void Collect(Vector2 portPos)
+    public void Collect(Order order, Vector2 portPos)
     {
+        Order = order;
+
         MoveTo(portPos);
 
         m_hungry.SetActive(false);
@@ -417,7 +420,8 @@ public class Animal : MonoBehaviour
                 {
                     if(MoveTowardsTarget(2))
                     {
-                        AnimalController.Instance.Despawn(this, collected: true);                           
+                        AnimalController.Instance.Despawn(this); 
+                        Order.PendingCollectionCount--;                         
                     }
                 }
                 break;
