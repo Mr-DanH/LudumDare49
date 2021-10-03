@@ -26,6 +26,8 @@ public class IslandRotation : MonoBehaviour
 
     Vector3 draggingSpeed;
 
+    Vector3 momentumSpeed;
+
     void Start()
     {
         startingRot = transform.localRotation;
@@ -37,12 +39,14 @@ public class IslandRotation : MonoBehaviour
             constantRotation *= Quaternion.Euler(timeOffset * rotationSpeed);
         }
 
+        momentumSpeed = rotationSpeed;
+
         DragCatcher.onDragDelta += OnDrag;
     }
 
     void OnDrag(Vector2 dragDelta)
     {
-        draggingSpeed = new Vector3(0, dragDelta.x, 0);
+        draggingSpeed = new Vector3(0, 400 * dragDelta.x / Screen.width, 0);
     }
 
     void Update()
@@ -52,11 +56,15 @@ public class IslandRotation : MonoBehaviour
         if (DragCatcher.Instance.IsDragging)
         {
             constantRotation *= Quaternion.Euler(draggingSpeed);
+            momentumSpeed = draggingSpeed / Time.deltaTime;
             draggingSpeed = Vector3.zero;
         }
         else if (continuousRotate)
         {
             constantRotation *= Quaternion.Euler(Time.deltaTime * rotationSpeed);
+            Vector3 target = new Vector3(0, Mathf.Abs(rotationSpeed.y) * Mathf.Sign(momentumSpeed.y), 0);
+            momentumSpeed = Vector3.Lerp(momentumSpeed, target, Time.deltaTime * 4);
+            constantRotation *= Quaternion.Euler(Time.deltaTime * momentumSpeed);
         }
 
         rotationToApply *= constantRotation;
