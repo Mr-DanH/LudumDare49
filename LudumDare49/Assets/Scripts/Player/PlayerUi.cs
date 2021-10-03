@@ -5,28 +5,12 @@ using UnityEngine.UI;
 
 public class PlayerUi : MonoBehaviour
 {
-    [SerializeField] Heart lifeTemplate;
-    [SerializeField] Transform lifeParent;
+    [SerializeField] Heart lifeIcon;
+    [SerializeField] Text score;
     [SerializeField] GameObject extinctionLabel;
-
-    private List<Heart> lives = new List<Heart>();
 
     private Player player;
     private float previousLife;
-
-    void Start()
-    {
-        float startingLife = Game.Instance.StartingLife;
-        for (int i = 0; i < startingLife; i++)
-        {
-            Heart clone = Instantiate<Heart>(lifeTemplate, lifeParent);
-            clone.UpdateFill(1f);
-            clone.gameObject.SetActive(true);
-            lives.Add(clone);
-        }
-
-        player = Game.Instance.player;    
-    }
 
     void Update()
     {
@@ -36,17 +20,13 @@ public class PlayerUi : MonoBehaviour
             previousLife = player.Life;
         }
 
+        score.text = player.CurrentScore.ToString();
+
         float currentHealth = player.Life;
         if (currentHealth != previousLife)
         {
-            for (int i = 0; i < lives.Count; i++)
-            {
-                Heart lifeVisual = lives[i];
-
-                float prop = Mathf.Clamp(currentHealth, i, i+1) - i;
-                lifeVisual.UpdateFill(prop);
-                
-            }
+            float prop = Mathf.InverseLerp(0, Game.Instance.StartingLife, currentHealth);
+            lifeIcon.UpdateFill(prop);
             extinctionTimer = 1f;
             extinctionLabel.SetActive(true);
             previousLife = currentHealth;
