@@ -155,13 +155,13 @@ public class Animal : MonoBehaviour
         State = eState.Dead;
     }
 
-    public void Collect()
+    public void Collect(Vector2 portPos)
     {
+        MoveTo(portPos);
+
         m_hungry.SetActive(false);
         m_old.SetActive(false);
 
-        gameObject.AddComponent<CanvasGroup>();
-        m_timeRemaining = 1;
         State = eState.Collecting;
     }
 
@@ -219,7 +219,7 @@ public class Animal : MonoBehaviour
             }
         }        
 
-        if (IsFree() && State != eState.Wait)
+        if (State != eState.Dead && State != eState.Wait)
         {
             Transform camera = Camera.main.transform;
             Vector3 direction = (Vector3)m_target - transform.localPosition;
@@ -415,16 +415,9 @@ public class Animal : MonoBehaviour
                 break;
             case eState.Collecting:
                 {
-                    Vector3 pos = transform.localPosition;
-                    pos.z -= Time.deltaTime * 50;
-                    transform.localPosition = pos;
-
-                    m_timeRemaining -= Time.deltaTime;
-                    gameObject.GetComponent<CanvasGroup>().alpha = m_timeRemaining;
-                    
-                    if(m_timeRemaining <= 0)
+                    if(MoveTowardsTarget(2))
                     {
-                        AnimalController.Instance.Despawn(this, collected: true);
+                        AnimalController.Instance.Despawn(this, collected: true);                           
                     }
                 }
                 break;

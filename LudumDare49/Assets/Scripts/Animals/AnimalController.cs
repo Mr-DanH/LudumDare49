@@ -66,13 +66,13 @@ public class AnimalController : Singleton<AnimalController>
     }
 
     int currentCollectCountdown = 0;
-    public IEnumerator<YieldInstruction> CollectOrder(AnimalDef def, int numToCollect)
+    public IEnumerator<YieldInstruction> CollectOrder(Vector2 portPos, AnimalDef def, int numToCollect)
     {
         currentCollectCountdown = numToCollect;
         List<Animal> animalsOfDef = m_animals.FindAll(x=>x.Def == def);
         for (int i = 0; i < numToCollect; i++)
         {
-            animalsOfDef[i].Collect();
+            animalsOfDef[i].Collect(portPos);
         }
 
         bool allCollected = false;

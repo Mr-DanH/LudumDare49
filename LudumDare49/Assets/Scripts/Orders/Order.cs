@@ -49,7 +49,7 @@ public class Order : MonoBehaviour
 
     IEnumerator<YieldInstruction> CollectOrder()
     {
-        yield return StartCoroutine(AnimalController.Instance.CollectOrder(AnimalDef, (int)fulfillmentNum));
+        yield return StartCoroutine(AnimalController.Instance.CollectOrder(transform.parent.localPosition, AnimalDef, (int)fulfillmentNum));
         
         state = eOrderState.Collected;
     }
