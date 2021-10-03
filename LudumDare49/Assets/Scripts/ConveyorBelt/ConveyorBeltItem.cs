@@ -10,10 +10,7 @@ using UnityEngine.UI;
 */
 public class ConveyorBeltItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
-    [SerializeField] Image type;
-    [SerializeField] Text spawnNum;
-    [SerializeField] GameObject notValid;
-
+    [SerializeField] Crate crate;
     [SerializeField] RectTransform island;
 
 
@@ -25,21 +22,14 @@ public class ConveyorBeltItem : MonoBehaviour, IBeginDragHandler, IDragHandler, 
     float timer = 0;
 
     public bool Removable { get; private set; }
-    public AnimalController.AnimalDef ItemType { get; private set; }
 
-    int spawnCount;
     bool isDragging;
     bool isOnIsland = false;
 
-    public void Init(int numToSpawn, AnimalController.AnimalDef itemType)
+    public void Init(int numToSpawn, AnimalController.AnimalDef animalDef)
     {
-        ItemType = itemType;
-        type.sprite = ItemType.m_visual.m_sprite;
-        spawnCount = numToSpawn;
-        spawnNum.text = $"x{numToSpawn.ToString()}";
-
         transform.localPosition = startingPos;
-
+        crate.Init(numToSpawn, animalDef);
         gameObject.SetActive(true);
     }
 
@@ -85,7 +75,7 @@ public class ConveyorBeltItem : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 
             isOnIsland = targetIslandPos.magnitude <= Island.Instance.Radius;
 
-            notValid.SetActive(!isOnIsland);
+            crate.SetInvalid(!isOnIsland);
         }
     }
 
@@ -95,11 +85,11 @@ public class ConveyorBeltItem : MonoBehaviour, IBeginDragHandler, IDragHandler, 
         {
             Vector3 targetIslandPos;
             RectTransformUtility.ScreenPointToWorldPointInRectangle(island, data.position, Camera.main, out targetIslandPos);
-            Island.Instance.SpawnAnimalsFromCrate(ItemType, spawnCount, targetIslandPos);
+            Island.Instance.SpawnAnimalsFromCrate(crate.AnimalDef, crate.NumToSpawn, targetIslandPos);
         }
         else
         {
-            ConveyorBelt.Instance.CreateSpecificItem(ItemType, spawnCount);
+            ConveyorBelt.Instance.CreateSpecificItem(crate.AnimalDef, crate.NumToSpawn);
         }
     
         isDragging = false;

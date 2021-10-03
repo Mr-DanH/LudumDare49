@@ -74,7 +74,7 @@ public class Island : Singleton<Island>
 
     public void SpawnAnimalsFromCrate(AnimalController.AnimalDef animalDef, int numToSpawn, Vector3 spawnPoint)
     {
-        CrateDrop clone = Instantiate<CrateDrop>(crateDropTemplate, transform);
+        CrateDrop clone = Instantiate<CrateDrop>(crateDropTemplate, islandObjectsContainer.transform);
         clone.gameObject.SetActive(true);
         clone.Drop(animalDef, numToSpawn, spawnPoint, FinishedCrateFall);
     }
@@ -91,12 +91,12 @@ public class Island : Singleton<Island>
 
     void SortIslandObjects()
     {
-        RectTransform[] allChildren = islandObjectsContainer.GetComponentsInChildren<RectTransform>();
+        Billboard[] allChildren = islandObjectsContainer.GetComponentsInChildren<Billboard>();
         List<IslandObjectSortDistance> distanceFromCamera = new List<IslandObjectSortDistance>();
 
         for(int i = 0; i < allChildren.Length; i++)
         {
-            RectTransform child = allChildren[i];
+            RectTransform child = allChildren[i].GetComponent<RectTransform>();
             float distance = Vector3.Distance(child.position, Camera.main.transform.position);
             distanceFromCamera.Add(new IslandObjectSortDistance(child, distance));
         }

@@ -4,20 +4,18 @@ using UnityEngine;
 
 public class CrateDrop : MonoBehaviour
 {
+    [SerializeField] Crate crate;
     [SerializeField] AnimationCurve fallCurve;
     [SerializeField] float startingHeight;
     [SerializeField] float duration;
 
     float timer;
     System.Action<AnimalController.AnimalDef, int, Vector3> callback;
-    AnimalController.AnimalDef m_AnimalDef;
-    int m_NumToSpawn;
     Vector3 m_SpawnPos;
 
     public void Drop(AnimalController.AnimalDef animalDef, int numToSpawn, Vector3 spawnPoint, System.Action<AnimalController.AnimalDef, int, Vector3> finishedFalling)
     {
-        m_AnimalDef = animalDef;
-        m_NumToSpawn = numToSpawn;
+        crate.Init(numToSpawn, animalDef, useParachute: true);
         m_SpawnPos = spawnPoint;
         callback = finishedFalling;
 
@@ -38,7 +36,7 @@ public class CrateDrop : MonoBehaviour
             yield return null;
         }
 
-        callback.Invoke(m_AnimalDef, m_NumToSpawn, m_SpawnPos);
+        callback.Invoke(crate.AnimalDef, crate.NumToSpawn, m_SpawnPos);
 
         Destroy(gameObject);
 
