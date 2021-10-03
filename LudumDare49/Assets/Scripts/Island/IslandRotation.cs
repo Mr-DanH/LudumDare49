@@ -61,7 +61,6 @@ public class IslandRotation : MonoBehaviour
         }
         else if (continuousRotate)
         {
-            constantRotation *= Quaternion.Euler(Time.deltaTime * rotationSpeed);
             Vector3 target = new Vector3(0, Mathf.Abs(rotationSpeed.y) * Mathf.Sign(momentumSpeed.y), 0);
             momentumSpeed = Vector3.Lerp(momentumSpeed, target, Time.deltaTime * 4);
             constantRotation *= Quaternion.Euler(Time.deltaTime * momentumSpeed);
