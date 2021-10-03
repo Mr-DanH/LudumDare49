@@ -26,6 +26,8 @@ public class OrdersManager : MonoBehaviour
     [SerializeField] int minOrderFulfillmentAmount;
     [SerializeField] int maxOrderFulfillmentAmount;
 
+    public int m_numOrders = 3;
+
     List<Port> ports = new List<Port>();
 
     void Start()
@@ -64,13 +66,20 @@ public class OrdersManager : MonoBehaviour
 
     void EnsureEnoughOrders()
     {
-        Port emptyPort = ports.Find(x=>!x.HasOrder());
-        if (emptyPort != null)
-        {
-           Order generatedOrder = GenerateRandomOrder(emptyPort);
-           generatedOrder.gameObject.SetActive(true);
-           // Todo - maybe check whether we want to use this order?
-           emptyPort.CurrentOrder = generatedOrder;
+        if(ports.FindAll(a => a.HasOrder()).Count < m_numOrders)
+        {            
+            var emptyPorts = ports.FindAll(a => !a.HasOrder());
+            if(emptyPorts.Count == 0)
+                return;
+
+            int index = Random.Range(0, emptyPorts.Count);
+
+            Port emptyPort = emptyPorts[index];
+
+            Order generatedOrder = GenerateRandomOrder(emptyPort);
+            generatedOrder.gameObject.SetActive(true);
+            // Todo - maybe check whether we want to use this order?
+            emptyPort.CurrentOrder = generatedOrder;
         }
     }
 
