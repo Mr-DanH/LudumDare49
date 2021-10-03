@@ -8,18 +8,19 @@ Shader "LD49/UnlitDistortion"
 		//_ScreenSpaceDist ("Screen Space UVs", Range(0,1)) = 0
 		_DistStrength ("Distortion Strength (xy=dist1, zw=dist2)", vector) = (0.1, 0.1, 0.1, 0.1)
 		_ScrollSpeedDist ("Distortion Scroll Speed (xy=dist1, zw=dist2)", vector) = (0, 0, 0, 0)
+		[Enum(Off, 0, On, 1)] _ZWriteMode ("ZWrite", Float) = 0 // default is "Off"
     }
     SubShader
     {
         Tags 
 		{
-			"Queue" = "Transparent"
+			"Queue" = "Transparent-1"
 			"IgnoreProjector" = "True"
 			"RenderType" = "Transparent"
 		}
         LOD 100
 		Cull Off
-		ZWrite Off
+		ZWrite [_ZWriteMode]
 		Blend SrcAlpha OneMinusSrcAlpha
 
         Pass

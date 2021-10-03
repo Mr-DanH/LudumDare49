@@ -37,6 +37,7 @@ public class Animal : MonoBehaviour
 
     public Animal Mate { get; set;}
     public Animal Prey { get; set;}
+    public Plant Plant { get; set; }
     public Vector2 Target { get { return m_target; } }
 
     public float Scale { get; set; } = 1;
@@ -149,7 +150,7 @@ public class Animal : MonoBehaviour
         MateTime = Mathf.MoveTowards(MateTime, 0, Time.deltaTime);
         m_hunger += Time.deltaTime;
 
-        if(State != eState.Dead && m_hunger > HUNGER_DIE && AnimalController.Instance.IsCarnivore(this))
+        if(State != eState.Dead && m_hunger > HUNGER_DIE)
         {
             Kill();
             return;
@@ -184,13 +185,27 @@ public class Animal : MonoBehaviour
 
                     if(m_hunger > HUNGER_EAT)
                     {
-                        Animal prey = AnimalController.Instance.FindPrey(this);
-                        if(prey != null)
+                        if(AnimalController.Instance.IsCarnivore(this))
                         {
-                            Prey = prey;
-                            MoveTo(prey.transform.localPosition);
-                            State = eState.Chasing;
-                            return;
+                            Animal prey = AnimalController.Instance.FindPrey(this);
+                            if(prey != null)
+                            {
+                                Prey = prey;
+                                MoveTo(prey.transform.localPosition);
+                                State = eState.Chasing;
+                                return;
+                            }
+                        }
+                        else
+                        {
+                            Plant prey = AnimalController.Instance.FindPlant(this);
+                            if(prey != null)
+                            {
+                                Plant = prey;
+                                MoveTo(prey.transform.localPosition);
+                                State = eState.Chasing;
+                                return;
+                            }
                         }
                     }
 
@@ -281,22 +296,39 @@ public class Animal : MonoBehaviour
 
             case eState.Chasing:
                 {
-                    if(Prey == null || Prey.State == eState.Dead)
+                    if((Prey == null || Prey.State == eState.Dead) && Plant == null)
                     {
                         m_timeRemaining = 1;
                         State = eState.Wait;
                         return;
                     }
 
-                    m_target = Prey.transform.localPosition;
-                    if(MoveTowardsTarget(2))
+                    if(Prey != null)
                     {
-                        Prey.Kill();
-                        m_hunger = 0;
+                        m_target = Prey.transform.localPosition;
+                        if(MoveTowardsTarget(2))
+                        {
+                            Prey.Kill();
+                            Prey = null;
+                            m_hunger = 0;
 
-                        m_timeRemaining = 1;
-                        State = eState.Wait;
+                            m_timeRemaining = 1;
+                            State = eState.Wait;
+                        }
                     }
+                    else
+                    {
+                        if(MoveTowardsTarget(2))
+                        {
+                            AnimalController.Instance.Despawn(Plant);
+                            Plant = null;
+                            m_hunger = 0;
+
+                            m_timeRemaining = 1;
+                            State = eState.Wait;
+                        }
+                    }
+
                 }
                 break;                
 
