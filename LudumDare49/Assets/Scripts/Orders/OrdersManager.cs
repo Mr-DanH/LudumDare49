@@ -89,19 +89,31 @@ public class OrdersManager : Singleton<OrdersManager>
 
             Port emptyPort = emptyPorts[index];
 
-            Order generatedOrder = GenerateRandomOrder(emptyPort);
+            Order generatedOrder = GenerateOrder(emptyPort);
             generatedOrder.gameObject.SetActive(true);
-            // Todo - maybe check whether we want to use this order?
             emptyPort.CurrentOrder = generatedOrder;
         }
     }
 
-    Order GenerateRandomOrder(Port port)
+    Order GenerateOrder(Port port)
     {
-        AnimalController.AnimalDef animalDef = AnimalController.Instance.GetRandomAnimalDef();
+        if (orderQueue.Count == 0)
+        {
+            PopulateOrderQueue();
+        }
+
+        AnimalController.AnimalDef nextOrder = orderQueue[0];
+        orderQueue.RemoveAt(0);
         Order clone = Instantiate<Order>(orderTemplate, Island.Instance.GetIslandObjectContainer());
         int fulfillmentAmount = Random.Range(minOrderFulfillmentAmount, maxOrderFulfillmentAmount);
-        clone.Init(animalDef, fulfillmentAmount, port.Point);
+        clone.Init(nextOrder, fulfillmentAmount, port.Point);
         return clone;
+    }
+
+    List<AnimalController.AnimalDef> orderQueue = new List<AnimalController.AnimalDef>();
+
+    void PopulateOrderQueue()
+    {
+        orderQueue.AddRange(Util.PopulateAnimalQueue());
     }
 }

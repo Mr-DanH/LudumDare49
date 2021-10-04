@@ -57,11 +57,7 @@ public class ConveyorBelt : Singleton<ConveyorBelt>
 
     void PopulateItemQueue()
     {
-        List<AnimalController.AnimalDef> defs = AnimalController.Instance.AnimalDefs;
-        itemQueue.AddRange(defs);
-        itemQueue.AddRange(defs);
-
-        itemQueue.Sort(RandomSort);
+        itemQueue = new List<AnimalController.AnimalDef>(Util.PopulateAnimalQueue());
     }
 
     AnimalController.AnimalDef GetNextItemInQueue()
@@ -75,11 +71,6 @@ public class ConveyorBelt : Singleton<ConveyorBelt>
         itemQueue.RemoveAt(0);
 
         return item;
-    }
-
-    int RandomSort(AnimalController.AnimalDef A, AnimalController.AnimalDef B)
-    {
-        return Random.Range(-1, 2);
     }
 
     void MoveBelt()
