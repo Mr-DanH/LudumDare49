@@ -70,7 +70,9 @@ public class Island : Singleton<Island>
                 float radius = Random.Range(Radius * 0.33f, Radius);
                 Vector2 localPos = new Vector2(radius * Mathf.Cos(angle), radius * Mathf.Sin(angle));
 
-                plants.Add(AnimalController.Instance.SpawnPlantAtPosition(AnimalController.Instance.m_island.transform.TransformPoint(localPos)));
+                var plant = AnimalController.Instance.SpawnPlantAtPosition(AnimalController.Instance.m_island.transform.TransformPoint(localPos));
+                if (plant != null)
+                    plants.Add(plant);
             }
         }
 
