@@ -57,7 +57,7 @@ public class ConveyorBelt : Singleton<ConveyorBelt>
 
     void PopulateItemQueue()
     {
-        itemQueue = new List<AnimalController.AnimalDef>(Util.PopulateAnimalQueue());
+        itemQueue.AddRange(Util.PopulateAnimalQueue());
     }
 
     AnimalController.AnimalDef GetNextItemInQueue()
