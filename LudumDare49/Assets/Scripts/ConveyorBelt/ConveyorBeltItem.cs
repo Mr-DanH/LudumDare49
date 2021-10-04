@@ -96,10 +96,6 @@ public class ConveyorBeltItem : MonoBehaviour, IBeginDragHandler, IDragHandler, 
             RectTransformUtility.ScreenPointToWorldPointInRectangle(island, data.position, Camera.main, out targetIslandPos);
             Island.Instance.SpawnAnimalsFromCrate(crate.AnimalDef, crate.NumToSpawn, targetIslandPos);
         }
-        else
-        {
-            ConveyorBelt.Instance.CreateSpecificItem(crate.AnimalDef, crate.NumToSpawn);
-        }
     
         isDragging = false;
         Removable = true;

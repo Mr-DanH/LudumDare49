@@ -18,11 +18,6 @@ public class ConveyorBelt : Singleton<ConveyorBelt>
     float timer = 0f;
     float nextItemCreation = 0f;
 
-    public void CreateSpecificItem(AnimalController.AnimalDef animalDef, int numToSpawn)
-    {
-        CreateItem(animalDef, numToSpawn);
-    }
-
     void Start()
     {
         PopulateItemQueue();
