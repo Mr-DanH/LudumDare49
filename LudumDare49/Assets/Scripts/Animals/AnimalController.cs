@@ -104,7 +104,7 @@ public class AnimalController : Singleton<AnimalController>
     public Animal SpawnAtPosition(AnimalDef def, Vector3 pos, float minDegrees = 0, float maxDegrees = 360)
     {
         var animal = Instantiate(m_prefab, pos, Quaternion.identity, m_island);
-        animal.name = m_index++.ToString();
+        animal.name = def.m_visual.m_name + " " + m_index++.ToString();
         animal.Init(def, minDegrees, maxDegrees);
 
         m_animals.Add(animal);
@@ -126,7 +126,7 @@ public class AnimalController : Singleton<AnimalController>
         }
 
         var plant = Instantiate(m_plantPrefab, pos, Quaternion.identity, m_island);
-        plant.name = m_index++.ToString();
+        plant.name = "Plant " + m_index++.ToString();
         m_plants.Add(plant);
 
         return plant;
