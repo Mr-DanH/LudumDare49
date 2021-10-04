@@ -7,6 +7,7 @@ public class Order : MonoBehaviour
 {
     enum eOrderState
     {
+        Arriving,
         Fufilling,
         Processing,
         Collected,
@@ -31,6 +32,8 @@ public class Order : MonoBehaviour
     eOrderState state;
     float fulfillmentNum;
 
+    bool m_canCollect;
+
     void Awake()
     {
         m_sailUpPos = CollectButton.transform.localPosition;
@@ -53,13 +56,15 @@ public class Order : MonoBehaviour
         float prop = numOnIsland / fulfillmentNum;
         progressBar.fillAmount = prop;
 
-        bool isCollectable = prop >= 1 && state == eOrderState.Fufilling;
-        CollectButton.interactable = isCollectable;
-        m_readyOutline.gameObject.SetActive(isCollectable);
+        m_canCollect = prop >= 1 && state == eOrderState.Fufilling;
+        m_readyOutline.gameObject.SetActive(m_canCollect);
     }
 
     public void OnCollect()
     {
+        if(!m_canCollect)
+            return;
+
         m_readyOutline.gameObject.SetActive(false);
         progressBar.transform.parent.gameObject.SetActive(false);
 
@@ -87,6 +92,8 @@ public class Order : MonoBehaviour
 
     IEnumerator<YieldInstruction> Arrive()
     {
+        state = eOrderState.Arriving;
+
         Vector2 portPos = Port.localPosition;
         Vector2 localDir = portPos.normalized;
 
@@ -97,6 +104,8 @@ public class Order : MonoBehaviour
         yield return StartCoroutine(AnimateSail(m_sailDownPos, m_sailUpPos));
         
         progressBar.transform.parent.gameObject.SetActive(true);
+
+        state = eOrderState.Fufilling;
     }
 
     IEnumerator<YieldInstruction> AnimateSail(Vector3 from, Vector3 to)
