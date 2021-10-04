@@ -61,6 +61,7 @@ public class Game : Singleton<Game>
         {
             float numExtinctions = 0;
             Dictionary<AnimalController.AnimalDef, int> animals = AnimalController.Instance.GatherAnimalIntel();
+            AnimalController.AnimalDef extinctAnimal = null;
             foreach(var animal in lastKnownSpecies)
             {
                 animals.TryGetValue(animal.Key, out int amount);
@@ -68,6 +69,7 @@ public class Game : Singleton<Game>
                 if(amount == 0 && animal.Value > 0)
                 {
                     numExtinctions++;
+                    extinctAnimal = animal.Key;
                 }
             }
             lastKnownSpecies.Clear();
@@ -76,7 +78,7 @@ public class Game : Singleton<Game>
             // todo - balance this
             if(numExtinctions > 0)
             {
-                player.DecreaseLife(numExtinctions/2);
+                player.DecreaseLife(extinctAnimal, numExtinctions/2);
             }
         }
     }

@@ -73,6 +73,9 @@ public class AnimalController : Singleton<AnimalController>
             intel.Add(def, animalsOfDef.Count);
         }
 
+        foreach(var animal in m_animals)
+            animal.IsLonely = intel[animal.Def] == 1;
+
         return intel;
     }
 
