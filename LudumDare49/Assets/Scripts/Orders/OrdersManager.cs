@@ -55,6 +55,8 @@ public class OrdersManager : Singleton<OrdersManager>
                port.CurrentOrder = null;
            }
         }
+
+        orderQueue.Clear();
     }
 
     void RefreshOrders()
