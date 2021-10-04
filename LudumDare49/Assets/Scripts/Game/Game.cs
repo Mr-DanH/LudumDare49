@@ -35,7 +35,7 @@ public class Game : Singleton<Game>
     void Init()
     {
         player = new Player(startingLife);
-        Dictionary<AnimalController.AnimalDef, int> animals = AnimalController.Instance.GatherAnimalIntel();
+        Dictionary<AnimalController.AnimalDef, int> animals = AnimalController.Instance.GatherAnimalIntel(true);
         lastKnownSpecies = new Dictionary<AnimalController.AnimalDef, int>(animals);
     }
 
@@ -62,7 +62,7 @@ public class Game : Singleton<Game>
         else
         {
             float numExtinctions = 0;
-            Dictionary<AnimalController.AnimalDef, int> animals = AnimalController.Instance.GatherAnimalIntel();
+            Dictionary<AnimalController.AnimalDef, int> animals = AnimalController.Instance.GatherAnimalIntel(true);
             AnimalController.AnimalDef extinctAnimal = null;
             foreach(var animal in lastKnownSpecies)
             {

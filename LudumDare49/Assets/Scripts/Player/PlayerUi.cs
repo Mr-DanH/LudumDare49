@@ -23,15 +23,15 @@ public class PlayerUi : Singleton<PlayerUi>
     }
 
     void Start()
-    {        
-        m_extinctionCanvasGroup.alpha = 0;
+    {
+        m_extinctionCanvasGroup.gameObject.SetActive(false);
     }
 
     public void Reset()
     {
         player = null;
         lifeIcon.UpdateFill(1);
-        m_extinctionCanvasGroup.alpha = 0;
+        m_extinctionCanvasGroup.gameObject.SetActive(false);
     }
 
     void Update()
@@ -55,8 +55,9 @@ public class PlayerUi : Singleton<PlayerUi>
                 m_extinctAnimalImage.sprite = player.LastExtinction.m_visual.m_sprite;
                 m_extinctionCanvasGroup.alpha = 1;
                 m_extinctionCanvasGroup.transform.localPosition = m_basePos;
+                m_extinctionCanvasGroup.gameObject.SetActive(true);
             }
-            
+
             previousLife = currentHealth;
         }
         else
@@ -65,6 +66,9 @@ public class PlayerUi : Singleton<PlayerUi>
             {
                 m_extinctionCanvasGroup.alpha = Mathf.MoveTowards(m_extinctionCanvasGroup.alpha, 0, Time.deltaTime * 0.5f);                
                 m_extinctionCanvasGroup.transform.localPosition = Vector3.Lerp(m_basePos + m_extinctionAnimOffset, m_basePos, m_extinctionCanvasGroup.alpha);
+
+                if(m_extinctionCanvasGroup.alpha == 0)
+                    m_extinctionCanvasGroup.gameObject.SetActive(false);
             }
         }
     }
