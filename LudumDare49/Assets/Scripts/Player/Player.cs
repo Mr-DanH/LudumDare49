@@ -22,7 +22,10 @@ public class Player
 
     public void IncreaseScore(int points)
     {
-        currentScore += points;
+        if (HasLife())
+        {
+            currentScore += points;
+        }
     }
 
     public void DecreaseLife(float amount)
