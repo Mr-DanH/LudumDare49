@@ -51,11 +51,15 @@ public class PlayerUi : Singleton<PlayerUi>
         {
             float prop = Mathf.InverseLerp(0, Game.Instance.StartingLife, currentHealth);
             lifeIcon.UpdateFill(prop);
-            previousLife = currentHealth;
 
-            m_extinctAnimalImage.sprite = player.LastExtinction.m_visual.m_sprite;
-            m_extinctionCanvasGroup.alpha = 1;
-            m_extinctionCanvasGroup.transform.localPosition = m_basePos;
+            if(currentHealth < previousLife)
+            {
+                m_extinctAnimalImage.sprite = player.LastExtinction.m_visual.m_sprite;
+                m_extinctionCanvasGroup.alpha = 1;
+                m_extinctionCanvasGroup.transform.localPosition = m_basePos;
+            }
+            
+            previousLife = currentHealth;
         }
         else
         {

@@ -28,6 +28,8 @@ public class Game : Singleton<Game>
         Island.Instance.Reset();
         ConveyorBelt.Instance.Reset();
         PlayerUi.Instance.Reset();
+        
+        lastKnownSpecies.Clear();
     }
 
     void Init()
