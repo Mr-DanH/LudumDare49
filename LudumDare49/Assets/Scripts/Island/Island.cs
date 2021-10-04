@@ -239,7 +239,7 @@ public class Island : Singleton<Island>
         float radius = 20;
         pos = (Vector2)plant.transform.localPosition + new Vector2(radius * Mathf.Cos(angle), radius * Mathf.Sin(angle));
 
-        return (pos.magnitude > InnerRadius || pos.magnitude < Radius);
+        return (pos.magnitude > InnerRadius && pos.magnitude < Radius);
     }
 
     List<IslandObjectSortDistance> m_islandSortPool = new List<IslandObjectSortDistance>();
