@@ -59,6 +59,8 @@ public class Island : Singleton<Island>
 
     void InitStart()
     {
+        List<Plant> plants = new List<Plant>();
+
         //Prepopulate some plants
         foreach(var biome in m_biomes)
         {
@@ -68,7 +70,22 @@ public class Island : Singleton<Island>
                 float radius = Random.Range(Radius * 0.33f, Radius);
                 Vector2 localPos = new Vector2(radius * Mathf.Cos(angle), radius * Mathf.Sin(angle));
 
-                AnimalController.Instance.SpawnPlantAtPosition(AnimalController.Instance.m_island.transform.TransformPoint(localPos));
+                plants.Add(AnimalController.Instance.SpawnPlantAtPosition(AnimalController.Instance.m_island.transform.TransformPoint(localPos)));
+            }
+        }
+
+        for(int i = 0; i < 2; ++i)
+        {
+            foreach(var plant in plants)
+            {
+                if(GetPropagationPos(plant, out Vector2 localPos))
+                {
+                    float angleToSpawnPos = Mathf.Atan2(localPos.y, localPos.x) * Mathf.Rad2Deg;
+                    var biome = GetBiomeForAngle(angleToSpawnPos);
+                    
+                    if(Random.value < biome.m_fertility * 2)
+                        AnimalController.Instance.SpawnPlantAtPosition(AnimalController.Instance.m_island.transform.TransformPoint(localPos));
+                }
             }
         }
     }
@@ -198,18 +215,15 @@ public class Island : Singleton<Island>
                 if(plant.Scale < 1)
                     continue;
 
-                float angle = Random.Range(0, 360) * Mathf.Deg2Rad;
-                float radius = 20;
-                Vector2 localPos = (Vector2)plant.transform.localPosition + new Vector2(radius * Mathf.Cos(angle), radius * Mathf.Sin(angle));
+                if(GetPropagationPos(plant, out Vector2 localPos))
+                {
+                    float angleToSpawnPos = Mathf.Atan2(localPos.y, localPos.x) * Mathf.Rad2Deg;
+                    var biome = GetBiomeForAngle(angleToSpawnPos);
+                    
+                    if(Random.value < biome.m_fertility * 2)
+                        AnimalController.Instance.SpawnPlantAtPosition(AnimalController.Instance.m_island.transform.TransformPoint(localPos));
+                }
 
-                if(localPos.magnitude <= InnerRadius || localPos.magnitude >= Radius)
-                    continue;
-
-                float angleToSpawnPos = Mathf.Atan2(localPos.y, localPos.x) * Mathf.Rad2Deg;
-                var biome = GetBiomeForAngle(angleToSpawnPos);
-                
-                if(Random.value < biome.m_fertility * 2)
-                    AnimalController.Instance.SpawnPlantAtPosition(AnimalController.Instance.m_island.transform.TransformPoint(localPos));
             }
             UnityEngine.Profiling.Profiler.EndSample();
 
@@ -217,6 +231,15 @@ public class Island : Singleton<Island>
         }
 
         SortIslandObjects();
+    }
+
+    bool GetPropagationPos(Plant plant, out Vector2 pos)
+    {
+        float angle = Random.Range(0, 360) * Mathf.Deg2Rad;
+        float radius = 20;
+        pos = (Vector2)plant.transform.localPosition + new Vector2(radius * Mathf.Cos(angle), radius * Mathf.Sin(angle));
+
+        return (pos.magnitude > InnerRadius || pos.magnitude < Radius);
     }
 
     List<IslandObjectSortDistance> m_islandSortPool = new List<IslandObjectSortDistance>();
