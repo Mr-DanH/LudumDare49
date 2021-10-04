@@ -66,17 +66,31 @@ public class AnimalController : Singleton<AnimalController>
         Init();
     }
 
-    public Dictionary<AnimalDef, int> GatherAnimalIntel()
+    public Dictionary<AnimalDef, int> GatherAnimalIntel(bool includeCollected = false)
     {
         Dictionary<AnimalDef, int> intel = new Dictionary<AnimalDef, int>();
-        foreach (var def in m_animalDefs)
-        {
-            List<Animal> animalsOfDef = m_animals.FindAll(x => x.Def == def && x.IsFree());
-            intel.Add(def, animalsOfDef.Count);
-        }
+        foreach(var def in m_animalDefs)
+            intel[def] = 0;
 
         foreach(var animal in m_animals)
-            animal.IsLonely = intel[animal.Def] == 1;
+        {
+            if(includeCollected)
+            {
+                if(animal.State != Animal.eState.Dead)
+                    intel[animal.Def]++;
+            }
+            else
+            {
+                if(animal.IsFree())
+                    intel[animal.Def]++;
+            }
+        }
+
+        if(!includeCollected)
+        { 
+            foreach(var animal in m_animals)
+                animal.IsLonely = intel[animal.Def] == 1;
+        }
 
         return intel;
     }
