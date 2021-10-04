@@ -8,6 +8,7 @@ public class Animal : MonoBehaviour
     public Image m_image;
     public GameObject m_hungry;
     public GameObject m_old;
+    public GameObject m_lonely;
 
     public float MateTime { get; private set; } = MATE_TIME;
 
@@ -38,6 +39,7 @@ public class Animal : MonoBehaviour
     }
     public eState State { get; private set; }
     float m_timeRemaining;
+    public bool IsLonely { get; set; }
 
     float m_bobScale;
     const float DIST_PER_BOB = 30;
@@ -57,14 +59,20 @@ public class Animal : MonoBehaviour
         Def = def;
         m_image.sprite = def.m_visual.m_sprite;
 
-        m_hungry.SetActive(false);
-        m_old.SetActive(false);
+        ClearThoughts();
         
         MoveTo(Island.Instance.GetRandomMoveTarget(transform.localPosition, minDegrees, maxDegrees));
         State = eState.Explore;
 
         m_hunger = Random.value;
         m_life -= Random.value;
+    }
+
+    void ClearThoughts()
+    {
+        m_hungry.SetActive(false);
+        m_old.SetActive(false);
+        m_lonely.SetActive(false);
     }
 
     public bool CanMate()
@@ -146,8 +154,7 @@ public class Animal : MonoBehaviour
 
     public void Kill()
     {
-        m_hungry.SetActive(false);
-        m_old.SetActive(false);
+        ClearThoughts();
 
         gameObject.AddComponent<CanvasGroup>();
         Vector3 scale = transform.localScale;
@@ -164,8 +171,7 @@ public class Animal : MonoBehaviour
         Vector3 targetDir = portPos - (Vector2)transform.localPosition;
         MoveTo(portPos - ((Vector2)targetDir.normalized * 5));
 
-        m_hungry.SetActive(false);
-        m_old.SetActive(false);
+        ClearThoughts();
 
         State = eState.Collecting;
     }
@@ -211,16 +217,19 @@ public class Animal : MonoBehaviour
             {
                 m_hungry.SetActive(showHungry);
                 m_old.SetActive(showOldAge);
+                m_lonely.SetActive(false);
             }
             else if (showHungry && showOldAge)
             {                
                 m_hungry.SetActive(timeToStarve <= timeToOldAge);
                 m_old.SetActive(timeToStarve > timeToOldAge);
+                m_lonely.SetActive(false);
             }
             else
             {                
                 m_hungry.SetActive(false);
                 m_old.SetActive(false);
+                m_lonely.SetActive(IsLonely);
             }
         }        
 
