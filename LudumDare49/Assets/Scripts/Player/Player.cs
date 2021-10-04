@@ -9,6 +9,7 @@ public class Player
     
     public int CurrentScore { get { return (int)currentScore; } }
     public float Life { get { return life; } }
+    public AnimalController.AnimalDef LastExtinction { get; set; }
 
     public bool HasLife()
     {
@@ -25,8 +26,9 @@ public class Player
         currentScore += points;
     }
 
-    public void DecreaseLife(float amount)
+    public void DecreaseLife(AnimalController.AnimalDef def, float amount)
     {
+        LastExtinction = def;
         life -= amount;
         life = life < 0 ? 0 : life;
     }
