@@ -47,6 +47,8 @@ public class AnimalController : Singleton<AnimalController>
     {
         List<AnimalVisual> visuals = new List<AnimalVisual>(m_animalVisuals);
 
+        m_animalDefs.Clear();
+
         for(int i = 0; i < m_foodWeb.Count; ++i)
         {
             var def = new AnimalDef();
