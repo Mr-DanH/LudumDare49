@@ -7,13 +7,11 @@ public class PlayerUi : Singleton<PlayerUi>
 {
     [SerializeField] Heart lifeIcon;
     [SerializeField] Text score;
-    [SerializeField] GameObject extinctionLabel;
     public Image m_extinctAnimalImage;
     public CanvasGroup m_extinctionCanvasGroup;
 
     private Player player;
-    private float previousLife;    
-    float extinctionTimer = 0f;
+    private float previousLife;
 
     Vector3 m_basePos;
     public Vector3 m_extinctionAnimOffset;
