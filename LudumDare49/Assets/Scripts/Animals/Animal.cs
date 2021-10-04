@@ -160,7 +160,9 @@ public class Animal : MonoBehaviour
     {
         Order = order;
 
-        MoveTo(portPos);
+        //Aim for position slightly before boat so animals don't clip boat on arrival
+        Vector3 targetDir = portPos - (Vector2)transform.localPosition;
+        MoveTo(portPos - ((Vector2)targetDir.normalized * 5));
 
         m_hungry.SetActive(false);
         m_old.SetActive(false);
