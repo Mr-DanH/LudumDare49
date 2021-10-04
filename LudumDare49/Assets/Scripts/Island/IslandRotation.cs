@@ -59,7 +59,7 @@ public class IslandRotation : MonoBehaviour
             momentumSpeed = draggingSpeed / Time.deltaTime;
             draggingSpeed = Vector3.zero;
         }
-        else if (continuousRotate)
+        else if (continuousRotate && momentumSpeed != Vector3.zero)
         {
             Vector3 target = new Vector3(0, Mathf.Abs(rotationSpeed.y) * Mathf.Sign(momentumSpeed.y), 0);
             momentumSpeed = Vector3.Lerp(momentumSpeed, target, Time.deltaTime * 4);
